@@ -6,7 +6,7 @@ const cors = require("cors");
 const http = require("http").createServer(app);
 
 const normalizePort = (port) => parseInt(port, 10);
-const PORT = normalizePort(process.env.PORT || 8000);
+const PORT = normalizePort(process.env.PORT || 80);
 
 app.use(express.urlencoded({ extended: false }));
 
