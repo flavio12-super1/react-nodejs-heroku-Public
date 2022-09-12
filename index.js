@@ -29,6 +29,6 @@ app.post("/getInfo", (req, res) => {
   res.send("hello new user");
 });
 
-http.listen(PORT, function () {
+http.listen(port, function () {
   console.log(`listening on port ${port}`);
 });
