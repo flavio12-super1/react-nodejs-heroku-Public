@@ -6,7 +6,7 @@ import axios from "axios";
 function App() {
   function getInfo() {
     axios
-      .post("http://localhost:8000/getInfo", {
+      .post("http://localhost:80/getInfo", {
         withCredentials: true,
       })
       .then((res) => {
