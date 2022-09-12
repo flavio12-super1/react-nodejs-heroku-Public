@@ -5,8 +5,7 @@ const path = require("path");
 const cors = require("cors");
 const http = require("http").createServer(app);
 
-const normalizePort = (port) => parseInt(port, 10);
-const PORT = normalizePort(process.env.PORT || 80);
+const port = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: false }));
 
@@ -31,5 +30,5 @@ app.post("/getInfo", (req, res) => {
 });
 
 http.listen(PORT, function () {
-  console.log(`listening on port ${PORT}`);
+  console.log(`listening on port ${port}`);
 });
