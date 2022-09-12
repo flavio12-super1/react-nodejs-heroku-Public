@@ -6,7 +6,7 @@ import axios from "axios";
 function App() {
   function getInfo() {
     axios
-      .post("http://localhost:3000/getInfo", {
+      .post("https://react-nodejs-heroku-public.herokuapp.com/getInfo", {
         withCredentials: true,
       })
       .then((res) => {

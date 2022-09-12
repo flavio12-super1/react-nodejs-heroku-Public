@@ -5,7 +5,7 @@ const path = require("path");
 const cors = require("cors");
 const http = require("http").createServer(app);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 app.use(express.urlencoded({ extended: false }));
 
