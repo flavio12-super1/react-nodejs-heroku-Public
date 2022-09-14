@@ -254,7 +254,6 @@ io.on("connection", (socket) => {
             $pull: {
               notifications: {
                 username: msg,
-                userID: userID,
               },
             },
           },
@@ -294,7 +293,6 @@ io.on("connection", (socket) => {
             $pull: {
               notifications: {
                 username: msg,
-                userID: userID,
               },
             },
           },
