@@ -277,6 +277,21 @@ io.on("connection", (socket) => {
         );
       }
     });
+    User.updateOne(
+      { _id: msg },
+      {
+        $pull: {
+          outGoingNotifications: myUsername,
+        },
+      },
+      function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
   });
   socket.on("denyRequest", (msg, myUsername, userID) => {
     User.findOne({ username: myUsername }, function (err, docs) {
@@ -307,6 +322,21 @@ io.on("connection", (socket) => {
         );
       }
     });
+    User.updateOne(
+      { _id: msg },
+      {
+        $pull: {
+          outGoingNotifications: myUsername,
+        },
+      },
+      function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
   });
 
   socket.on("leaveRoom", (room) => {
