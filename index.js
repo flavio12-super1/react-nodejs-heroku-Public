@@ -76,30 +76,30 @@ io.use((socket, next) => {
 });
 
 //resolve path for front end
-app.use(express.static(path.resolve(__dirname, "./web/build")));
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 
 app.get("/", checkAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "./web/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
 app.get("/lurker", checkAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "./web/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
 app.get("/lurker/messages/:id", checkAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "./web/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
 app.get("/login", checkNotAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "./web/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
 app.get("/register", checkNotAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "./web/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
 app.get("*", checkAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "./web/build", "index.html"));
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
 io.on("connection", (socket) => {
