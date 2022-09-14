@@ -1,0 +1,42 @@
+#navDiv {
+  /* background-color: #202020; */
+  background-color: #06000a;
+  height: 100vh;
+  border-right: solid var(--color);
+  padding: 5px;
+  box-sizing: border-box;
+  color: var(--color);
+}
+.navIcons {
+  background-color: #d5d5d5;
+  border: solid;
+  border-radius: 15px;
+  cursor: pointer;
+  height: 55px;
+  width: 55px;
+  display: block;
+  margin-bottom: 5px;
+}
+.navIcons:hover {
+  border: solid gray;
+}
+#logOutBtn {
+  width: -webkit-fill-available;
+}
+
+.roomDiv {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100px;
+  border-right: solid var(--color);
+  background-color: #202020;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+#innerDivLurker {
+  background-color: #383838;
+  width: -webkit-fill-available;
+  color: white;
+}

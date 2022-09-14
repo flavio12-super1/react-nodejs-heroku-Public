@@ -1,0 +1,87 @@
+.box {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+}
+
+.header {
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+  border-bottom: solid white;
+}
+
+.content {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0px;
+  overflow: auto;
+}
+
+.footer {
+  border-top: solid #fff;
+  flex-basis: 40px;
+  flex-grow: 0;
+  flex-shrink: 1;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+#outerFormDiv {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  align-items: center;
+  background-color: #6b6b6b;
+}
+
+#imageWrapper {
+  display: flex;
+}
+
+.myImage {
+  max-width: 200px;
+  display: block;
+}
+
+#form {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+#outerTxtInput {
+  display: flex;
+  width: 100%;
+  padding: 5px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 30vh;
+}
+
+#txtInput {
+  flex-grow: 1;
+}
+
+.iconDiv {
+  height: 100%;
+}
+
+#input[type="file"] {
+  display: none;
+}
+.image-upload {
+  cursor: pointer;
+}
+
+.messageOuterDiv {
+  white-space: pre-wrap;
+}
+.messageDiv {
+  height: 18px;
+  border: solid yellow 4px;
+  margin-top: 5px;
+}

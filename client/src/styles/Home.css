@@ -1,0 +1,82 @@
+:root {
+  --padding: 5px;
+  --color: #16ceff;
+}
+
+#outerDiv {
+  display: flex;
+  height: 100vh;
+  background-image: url("./spaceSynth.jpeg");
+  background-size: cover;
+}
+#spiderDiv {
+  width: 300px;
+  padding: 5px;
+  box-sizing: border-box;
+  background-color: #06000a;
+  border-right: 2px solid #afafaf;
+  color: var(--color);
+}
+#spiderImg {
+  width: 100%;
+}
+#name {
+  font-size: 78px;
+  margin-top: 10px;
+}
+#title {
+  font-size: 32px;
+  margin-top: 10px;
+}
+#description {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+#interactDiv {
+  width: calc(100% - 300px);
+}
+
+#innerDiv {
+  background-color: #06000a;
+  border: 2px solid #afafaf;
+  width: 300px;
+  height: 350px;
+  margin: 40px 0px 0px 40px;
+  color: var(--color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#accountDataDiv {
+  height: calc(100% - 40px);
+  width: 80%;
+  padding: 5px;
+}
+#buttonDiv {
+  border-top: 2px solid #afafaf;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  box-sizing: border-box;
+}
+#button {
+  width: 200px;
+  margin: 5px;
+}
+
+.accountDataInnerDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.accountDataInnerDiv button {
+  width: 100px;
+  margin-top: 5px;
+}
+.accountDataInnerDiv input {
+  width: 200px;
+  margin-top: 5px;
+}

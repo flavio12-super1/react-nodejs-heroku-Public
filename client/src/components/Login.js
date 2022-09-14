@@ -1,0 +1,65 @@
+import React from "react";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const Login = () => {
+    axios({
+      method: "POST",
+      data: {
+        username: username,
+        password: password,
+      },
+      withCredentials: true,
+      url: "https://react-nodejs-heroku-public.herokuapp.com/login",
+    })
+      .then((res) => {
+        if (res.data.msg == "pass") {
+          console.log(res.data.user);
+          localStorage.setItem("user_id", res.data.user._id);
+          localStorage.setItem("username", res.data.user.username);
+          localStorage.setItem("email", res.data.user.emailAddress);
+          localStorage.setItem("status", "online");
+          window.location.href =
+            "https://react-nodejs-heroku-public.herokuapp.com/lurker";
+        } else if (res.data.msg == "wait") {
+          alert("you have been rate limited, please wait a minute");
+        } else {
+          console.log(res.data.msg);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  return (
+    <div className="accountDataInnerDiv">
+      <div>Please long in</div>
+      <div>
+        <input
+          type="text"
+          value={username}
+          placeholder="enter your username"
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div>
+        <input
+          type="password"
+          value={password}
+          placeholder="enter your password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <button onClick={Login}>Login</button>
+    </div>
+  );
+}
+
+export default Login;
