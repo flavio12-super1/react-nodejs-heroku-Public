@@ -278,7 +278,7 @@ io.on("connection", (socket) => {
       }
     });
     User.updateOne(
-      { _id: msg },
+      { username: msg },
       {
         $pull: {
           outGoingNotifications: myUsername,
@@ -323,7 +323,7 @@ io.on("connection", (socket) => {
       }
     });
     User.updateOne(
-      { _id: msg },
+      { username: msg },
       {
         $pull: {
           outGoingNotifications: myUsername,
