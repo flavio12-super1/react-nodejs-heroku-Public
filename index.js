@@ -80,6 +80,10 @@ io.use((socket, next) => {
 //resolve path for front end
 app.use(express.static(path.resolve(__dirname, "../web/build")));
 
+app.get("/", checkAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "../web/build", "index.html"));
+});
+
 app.get("/lurker", checkAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "../web/build", "index.html"));
 });
