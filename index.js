@@ -125,28 +125,49 @@ io.on("connection", (socket) => {
     socket.join(room.room);
     console.log("joined => " + room.room);
   });
+  socket.on("insertOngoing", (msg, myUsername) => {
+    User.findOne({ username: myUsername })
+      .then((result) => {
+        if (result) {
+          console.log("outgoing request from" + myUsername + " to: " + msg);
+          console.log(result.username);
+          User.updateOne(
+            { username: myUsername },
+            {
+              $push: {
+                outGoingNotifications: msg,
+              },
+            },
+            function (err, result) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(result);
+              }
+            }
+          );
+        } else {
+          console.log("user doenst exist");
+        }
+        return result;
+      })
+      .catch((err) => console.error(`Failed to find document: ${err}`));
+  });
   socket.on("sendRequest", (msg, myUsername, userID) => {
     User.findOne({ username: msg })
       .then((result) => {
         if (result) {
           console.log("request made to: " + msg + " from: " + myUsername);
           io.to(result.id).emit("private message", myUsername, userID);
+          console.log(result.username);
           User.updateOne(
-            { _id: result.id },
+            { username: msg },
             {
               $push: {
                 notifications: {
                   username: myUsername,
                   userID: userID,
                 },
-              },
-            }
-          );
-          User.updateOne(
-            { username: myUsername },
-            {
-              $push: {
-                outGoingNotifications: msg,
               },
             },
             function (err, result) {

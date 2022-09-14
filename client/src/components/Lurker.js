@@ -143,6 +143,7 @@ function Lurker(props) {
   }
   function emitRequest(username) {
     socket.emit("sendRequest", username, myUsername, userID);
+    socket.emit("insertOngoing", username, myUsername);
     setOutGoingNotifications((outGoingNotifications) => [
       username,
       ...outGoingNotifications,
