@@ -21,6 +21,22 @@ function Chat(props) {
   const userData = useContext(UserContext);
   const { friendsList } = userData;
 
+  function getMessages(roomID) {
+    axios({
+      method: "POST",
+      data: {
+        roomID: roomID,
+      },
+      withCredentials: true,
+      url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
+    })
+      .then((res) => {
+        console.log(res.data.data);
+        setChat(res.data.data);
+      })
+      .catch((err) => console.log(err));
+  }
+
   useEffect(() => {
     socket.emit("joinRoom", room);
     console.log("joined: " + room.room + " successfuly");
@@ -36,19 +52,20 @@ function Chat(props) {
       );
     });
 
-    axios({
-      method: "POST",
-      data: {
-        roomID: room.room,
-      },
-      withCredentials: true,
-      url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
-    })
-      .then((res) => {
-        console.log(res.data.data);
-        setChat(res.data.data);
-      })
-      .catch((err) => console.log(err));
+    // axios({
+    //   method: "POST",
+    //   data: {
+    //     roomID: room.room,
+    //   },
+    //   withCredentials: true,
+    //   url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
+    // })
+    //   .then((res) => {
+    //     console.log(res.data.data);
+    //     setChat(res.data.data);
+    //   })
+    //   .catch((err) => console.log(err));
+    getMessages(room.room);
   }, []);
 
   function joinRoom(e) {
@@ -58,6 +75,7 @@ function Chat(props) {
   function updateRoom(e, myCallback) {
     socket.emit("leaveRoom", room);
     console.log("left: " + room.room);
+    getMessages(room.room);
     myCallback(e);
   }
 
