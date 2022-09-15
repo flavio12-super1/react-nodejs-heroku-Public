@@ -42,7 +42,7 @@ function Register() {
         <input
           type="email"
           value={email}
-          placeholder="enter a valid email(optional)"
+          placeholder="enter a email"
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>

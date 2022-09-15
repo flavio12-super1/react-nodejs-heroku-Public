@@ -25,6 +25,7 @@ mdb.on("error", (error) => console.error(error));
 mdb.once("open", () => console.log("Connected to Mongoose"));
 //passport
 const initializePassport = require("./passport-config");
+const Room = require("./models/Room");
 initializePassport(passport);
 
 app.use(express.urlencoded({ extended: false }));
@@ -270,6 +271,19 @@ io.on("connection", (socket) => {
 
                 io.to(userID).emit("friendRequestAccepted", myUsername, roomID);
                 io.to(docs.id).emit("friendRoomId", msg, roomID);
+
+                var room = new Room({
+                  roomID: roomID,
+                  nessage: [],
+                });
+
+                room.save(function (err, result) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log(result);
+                  }
+                });
               });
               console.log(result);
             }
