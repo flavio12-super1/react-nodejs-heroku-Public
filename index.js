@@ -109,9 +109,27 @@ io.on("connection", (socket) => {
   // join the "userID" room
   socket.join(socket.userID);
 
-  socket.on("message", (data) => {
+  socket.on("message", async (data) => {
     io.sockets.in(data.room).emit("message", data);
-    // io.to(socket.userID).emit("private message", "hi");
+    Room.updateOne(
+      { roomID: data.room },
+      {
+        $push: {
+          message: {
+            name: data.name,
+            message: data.message,
+            images: data.images,
+          },
+        },
+      },
+      function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
     console.log(
       data.name +
         " => " +

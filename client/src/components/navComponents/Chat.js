@@ -29,11 +29,25 @@ function Chat(props) {
 
   useEffect(() => {
     socket.on("message", (data) => {
-      setChat((chat) => [data, ...chat]);
+      setChat((chat) => [...chat, data]);
       console.log(
         "message returned: " + data.message + " images returned: " + data.images
       );
     });
+
+    axios({
+      method: "POST",
+      data: {
+        roomID: room.room,
+      },
+      withCredentials: true,
+      url: "http://localhost:8000/getMessages",
+    })
+      .then((res) => {
+        console.log(res.data.data);
+        setChat(res.data.data);
+      })
+      .catch((err) => console.log(err));
   }, []);
 
   function joinRoom(e) {
@@ -260,7 +274,7 @@ function Chat(props) {
               <div>you are in room: {room.room}</div>
             </div>
             <div className="content">
-              <div>{renderChat().reverse()}</div>
+              <div>{renderChat()}</div>
             </div>
             <div className="footer">
               <div>
