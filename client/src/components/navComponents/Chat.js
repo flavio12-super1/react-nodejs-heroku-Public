@@ -9,7 +9,7 @@ import axios from "axios";
 
 function Chat(props) {
   let { id } = useParams();
-  id ??= "";
+  id ??= null;
   let navigate = useNavigate();
 
   const [room, setRoom] = useState({ room: id });
@@ -38,8 +38,9 @@ function Chat(props) {
   // }
 
   useEffect(() => {
-    console.log(room.room);
-    if (room.room != "" || room.room != " ") {
+    if (room.room == null) {
+      console.log("pain");
+    } else if (room.room != null) {
       socket.emit("joinRoom", room);
       console.log("joined: " + room.room + " successfuly");
       setChat([]);
