@@ -17,7 +17,7 @@ import {
   useSlate,
 } from "slate-react";
 
-import { HistoryEditor } from "slate-history";
+import { withHistory, HistoryEditor } from "slate-history";
 
 type CustomElement = { type: "paragraph"; children: CustomText[] };
 type CustomText = { text: string; bold?: true };
@@ -39,7 +39,7 @@ const initialValue: Descendant[] = [
 
 function SlateInput(props: any) {
   const editor = useMemo(() => {
-    return withReact(createEditor());
+    return withHistory(withReact(createEditor()));
   }, []);
 
   function sendMessage() {
