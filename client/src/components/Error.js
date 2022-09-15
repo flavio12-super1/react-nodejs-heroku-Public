@@ -1,7 +1,14 @@
 import React from "react";
 
 function Error() {
-  return <div>Error 404</div>;
+  return (
+    <div>
+      <div>Error 404</div>
+      <div>
+        <p>makes sure you typed in the correct url</p>
+      </div>
+    </div>
+  );
 }
 
 export default Error;

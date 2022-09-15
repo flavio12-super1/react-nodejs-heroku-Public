@@ -20,6 +20,9 @@ function TempHome() {
           <button>
             <Link to="/login">log in</Link>
           </button>
+          <button>
+            <Link to="/register">register</Link>
+          </button>
         </div>
       )}
     </div>
