@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import SlateInput from "./SlateInput";
 import { UserContext } from "../Lurker";
 import SocketContext from "../SocketContext";
+import axios from "axios";
 
 function Chat(props) {
   let { id } = useParams();
