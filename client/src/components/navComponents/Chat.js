@@ -64,20 +64,6 @@ function Chat(props) {
         "message returned: " + data.message + " images returned: " + data.images
       );
     });
-
-    axios({
-      method: "POST",
-      data: {
-        roomID: room.room,
-      },
-      withCredentials: true,
-      url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
-    })
-      .then((res) => {
-        console.log(res.data.data);
-        setChat(res.data.data);
-      })
-      .catch((err) => console.log(err));
     // getMessages(room.room);
   }, []);
 
