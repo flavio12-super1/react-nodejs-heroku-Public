@@ -70,12 +70,12 @@ function Chat(props) {
 
   function joinRoom(e) {
     setRoom({ room: e.target.id });
+    getMessages(e.target.id);
   }
 
   function updateRoom(e, myCallback) {
     socket.emit("leaveRoom", room);
     console.log("left: " + room.room);
-    getMessages(room.room);
     myCallback(e);
   }
 
