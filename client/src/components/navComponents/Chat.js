@@ -38,23 +38,25 @@ function Chat(props) {
   // }
 
   useEffect(() => {
-    socket.emit("joinRoom", room);
-    console.log("joined: " + room.room + " successfuly");
-    setChat([]);
-    navigate("/lurker/messages/" + room.room);
-    axios({
-      method: "POST",
-      data: {
-        roomID: room.room,
-      },
-      withCredentials: true,
-      url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
-    })
-      .then((res) => {
-        console.log(res.data.data);
-        setChat(res.data.data);
+    if (room != null) {
+      socket.emit("joinRoom", room);
+      console.log("joined: " + room.room + " successfuly");
+      setChat([]);
+      navigate("/lurker/messages/" + room.room);
+      axios({
+        method: "POST",
+        data: {
+          roomID: room.room,
+        },
+        withCredentials: true,
+        url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
       })
-      .catch((err) => console.log(err));
+        .then((res) => {
+          console.log(res.data.data);
+          setChat(res.data.data);
+        })
+        .catch((err) => console.log(err));
+    }
   }, [room]);
 
   useEffect(() => {
