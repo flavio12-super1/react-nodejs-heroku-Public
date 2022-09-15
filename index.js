@@ -13,7 +13,7 @@ const crypto = require("crypto");
 
 //routes
 const User = require("./models/User");
-
+const Room = require("./models/Room");
 //mongoose db
 const mongoose = require("mongoose");
 mongoose.connect(
@@ -25,7 +25,7 @@ mdb.on("error", (error) => console.error(error));
 mdb.once("open", () => console.log("Connected to Mongoose"));
 //passport
 const initializePassport = require("./passport-config");
-const Room = require("./models/Room");
+
 initializePassport(passport);
 
 app.use(express.urlencoded({ extended: false }));
@@ -265,7 +265,7 @@ io.on("connection", (socket) => {
               crypto.randomBytes(8, (err, buf) => {
                 if (err) throw err;
 
-                let roomID = buf.toString("hex");
+                const roomID = buf.toString("hex");
 
                 console.log(`${buf.length} bytes of random data: ${roomID}`);
 
