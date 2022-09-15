@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import users from "./lurker-icons/users.png";
+import explore from "./lurker-icons/explore.png";
 
 function Nav() {
   const navDiv = {
@@ -16,31 +18,14 @@ function Nav() {
         <div className="myLink">
           <Link to="/lurker/messages" style={navStyle}>
             <div>
-              <div>
-                <img
-                  className="navIcons"
-                  src="https://securiumsolutions.com/blog/wp-content/uploads/2020/07/hacker-vector-black-hat-14.png"
-                  alt="messages"
-                />
-              </div>
-            </div>
-          </Link>
-        </div>
-        <div className="myLink">
-          <Link to="/lurker/servers" style={navStyle}>
-            <div>
-              <img
-                className="navIcons"
-                src="https://cdn.iconscout.com/icon/free/png-256/direct-message-4626985-3853176.png"
-                alt="servers"
-              />
+              <img className="navIcons" src={users} alt="messages" />
             </div>
           </Link>
         </div>
         <div className="myLink">
           <Link to="/lurker/explore" style={navStyle}>
             <div>
-              <img className="navIcons" src="" alt="explore" />
+              <img className="navIcons" src={explore} alt="explore" />
             </div>
           </Link>
         </div>

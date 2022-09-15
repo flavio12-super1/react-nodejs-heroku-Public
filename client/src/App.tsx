@@ -4,7 +4,6 @@ import Chat from "./components/navComponents/Chat";
 import Explore from "./components/navComponents/Explore";
 import Market from "./components/navComponents/Market";
 import Notifications from "./components/navComponents/Notifications";
-import Servers from "./components/navComponents/Servers";
 import Settings from "./components/navComponents/Settings";
 
 import Home from "./components/Home";
@@ -46,11 +45,6 @@ function App() {
           <Route
             path="/lurker/messages/:id"
             element={<Lurker page={<Chat />} />}
-          />
-
-          <Route
-            path="/lurker/servers"
-            element={<Lurker page={<Servers />} />}
           />
           <Route
             path="/lurker/explore"
