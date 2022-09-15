@@ -38,8 +38,8 @@ function Chat(props) {
   // }
 
   useEffect(() => {
-    console.log(room + room.length);
-    if (room != "" || room != " ") {
+    console.log(room.room);
+    if (room.room != "" || room.room != " ") {
       socket.emit("joinRoom", room);
       console.log("joined: " + room.room + " successfuly");
       setChat([]);
