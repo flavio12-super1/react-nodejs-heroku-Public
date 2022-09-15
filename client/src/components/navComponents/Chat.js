@@ -78,7 +78,7 @@ function Chat(props) {
         setChat(res.data.data);
       })
       .catch((err) => console.log(err));
-    getMessages(room.room);
+    // getMessages(room.room);
   }, []);
 
   function joinRoom(e) {
