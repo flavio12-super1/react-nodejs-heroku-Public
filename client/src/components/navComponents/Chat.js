@@ -41,7 +41,7 @@ function Chat(props) {
         roomID: room.room,
       },
       withCredentials: true,
-      url: "http://localhost:8000/getMessages",
+      url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
     })
       .then((res) => {
         console.log(res.data.data);
