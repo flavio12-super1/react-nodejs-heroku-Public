@@ -377,6 +377,21 @@ io.on("connection", (socket) => {
   });
 });
 
+app.post("/getMessages", async (req, res) => {
+  try {
+    const room = await Room.findOne({ roomID: req.body.roomID });
+
+    if (room) {
+      console.log(room.message);
+      res.send({
+        data: room.message,
+      });
+    }
+  } catch {
+    res.send({ msg: "error" });
+  }
+});
+
 app.post("/getFriendsList", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
