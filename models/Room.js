@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
 const Data = mongoose.Schema({
-  username: {
+  name: {
     type: String,
   },
   message: {
     type: Object,
     required: false,
   },
-  image: {
-    type: String,
+  images: {
+    type: [String],
     required: false,
   },
 });
