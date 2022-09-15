@@ -21,11 +21,31 @@ function Chat(props) {
   const userData = useContext(UserContext);
   const { friendsList } = userData;
 
-  function getMessages(roomID) {
+  // function getMessages(roomID) {
+  //   axios({
+  //     method: "POST",
+  //     data: {
+  //       roomID: roomID,
+  //     },
+  //     withCredentials: true,
+  //     url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
+  //   })
+  //     .then((res) => {
+  //       console.log(res.data.data);
+  //       setChat(res.data.data);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }
+
+  useEffect(() => {
+    socket.emit("joinRoom", room);
+    console.log("joined: " + room.room + " successfuly");
+    setChat([]);
+    navigate("/lurker/messages/" + room.room);
     axios({
       method: "POST",
       data: {
-        roomID: roomID,
+        roomID: room.room,
       },
       withCredentials: true,
       url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
@@ -35,13 +55,6 @@ function Chat(props) {
         setChat(res.data.data);
       })
       .catch((err) => console.log(err));
-  }
-
-  useEffect(() => {
-    socket.emit("joinRoom", room);
-    console.log("joined: " + room.room + " successfuly");
-    setChat([]);
-    navigate("/lurker/messages/" + room.room);
   }, [room]);
 
   useEffect(() => {
@@ -52,25 +65,25 @@ function Chat(props) {
       );
     });
 
-    // axios({
-    //   method: "POST",
-    //   data: {
-    //     roomID: room.room,
-    //   },
-    //   withCredentials: true,
-    //   url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
-    // })
-    //   .then((res) => {
-    //     console.log(res.data.data);
-    //     setChat(res.data.data);
-    //   })
-    //   .catch((err) => console.log(err));
+    axios({
+      method: "POST",
+      data: {
+        roomID: room.room,
+      },
+      withCredentials: true,
+      url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
+    })
+      .then((res) => {
+        console.log(res.data.data);
+        setChat(res.data.data);
+      })
+      .catch((err) => console.log(err));
     getMessages(room.room);
   }, []);
 
   function joinRoom(e) {
     setRoom({ room: e.target.id });
-    getMessages(e.target.id);
+    // getMessages(e.target.id);
   }
 
   function updateRoom(e, myCallback) {
