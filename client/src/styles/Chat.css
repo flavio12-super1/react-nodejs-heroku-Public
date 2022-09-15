@@ -82,6 +82,8 @@
 }
 .messageDiv {
   height: 18px;
-  border: solid yellow 4px;
-  margin-top: 5px;
+  margin-left: 5px;
+}
+.username {
+  color: gray;
 }

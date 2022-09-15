@@ -110,7 +110,7 @@ function Chat(props) {
     return chat.map((data, index) => (
       <div key={index}>
         <div>
-          <div>{data.name}: </div>
+          <div className="username">{data.name}: </div>
           <div>{renderChatMessages(data.message)}</div>
           <div>{renderDataImg(data.images)}</div>
         </div>
