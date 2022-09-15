@@ -274,7 +274,7 @@ io.on("connection", (socket) => {
 
                 var room = new Room({
                   roomID: roomID,
-                  nessage: [],
+                  message: [],
                 });
 
                 room.save(function (err, result) {
