@@ -6,8 +6,6 @@ import SlateInput from "./SlateInput";
 import { UserContext } from "../Lurker";
 import SocketContext from "../SocketContext";
 import axios from "axios";
-import e from "express";
-import { isReadable } from "stream";
 
 function Chat(props) {
   let { id } = useParams();
