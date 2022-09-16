@@ -6,11 +6,23 @@ import SlateInput from "./SlateInput";
 import { UserContext } from "../Lurker";
 import SocketContext from "../SocketContext";
 import axios from "axios";
+import e from "express";
+import { isReadable } from "stream";
 
 function Chat(props) {
   let { id } = useParams();
   id ??= null;
   let navigate = useNavigate();
+
+  var currentUrl = window.location.href;
+  partStr = currentUrl.slice(0, 5);
+  var uri = "";
+  if (partStr == "https") {
+    uri = "https://react-nodejs-heroku-public.herokuapp.com/";
+  } else {
+    uri = "http://localhost:8000/";
+  }
+  console.log(uri);
 
   const [room, setRoom] = useState({ room: id });
   const [chat, setChat] = useState(Array());
@@ -20,22 +32,6 @@ function Chat(props) {
   const socket = useContext(SocketContext);
   const userData = useContext(UserContext);
   const { friendsList } = userData;
-
-  // function getMessages(roomID) {
-  //   axios({
-  //     method: "POST",
-  //     data: {
-  //       roomID: roomID,
-  //     },
-  //     withCredentials: true,
-  //     url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
-  //   })
-  //     .then((res) => {
-  //       console.log(res.data.data);
-  //       setChat(res.data.data);
-  //     })
-  //     .catch((err) => console.log(err));
-  // }
 
   useEffect(() => {
     if (room.room == null) {
@@ -77,9 +73,14 @@ function Chat(props) {
   }
 
   function updateRoom(e, myCallback) {
-    socket.emit("leaveRoom", room);
-    console.log("left: " + room.room);
-    myCallback(e);
+    if (room.room) {
+      socket.emit("leaveRoom", room);
+      console.log("left: " + room.room);
+      myCallback(e);
+    }
+    // socket.emit("leaveRoom", room);
+    // console.log("left: " + room.room);
+    // myCallback(e);
   }
 
   const onMessageSubmit = (messages) => {
