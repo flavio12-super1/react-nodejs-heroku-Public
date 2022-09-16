@@ -22,7 +22,7 @@ function Chat(props) {
   const { friendsList } = userData;
 
   var currentUrl = window.location.href;
-  partStr = currentUrl.slice(0, 5);
+  var partStr = currentUrl.slice(0, 5);
   var uri = "";
   if (partStr == "https") {
     uri = "https://react-nodejs-heroku-public.herokuapp.com/";
