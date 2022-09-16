@@ -12,16 +12,6 @@ function Chat(props) {
   id ??= null;
   let navigate = useNavigate();
 
-  var currentUrl = window.location.href;
-  var partStr = currentUrl.slice(0, 5);
-  var uri = "";
-  if (partStr == "https") {
-    uri = "https://react-nodejs-heroku-public.herokuapp.com/";
-  } else {
-    uri = "http://localhost:8000/";
-  }
-  console.log(uri);
-
   const [room, setRoom] = useState({ room: id });
   const [chat, setChat] = useState(Array());
   const [image, setImage] = useState([]);
@@ -30,6 +20,16 @@ function Chat(props) {
   const socket = useContext(SocketContext);
   const userData = useContext(UserContext);
   const { friendsList } = userData;
+
+  var currentUrl = window.location.href;
+  partStr = currentUrl.slice(0, 5);
+  var uri = "";
+  if (partStr == "https") {
+    uri = "https://react-nodejs-heroku-public.herokuapp.com/";
+  } else {
+    uri = "http://localhost:8000/";
+  }
+  console.log(uri);
 
   useEffect(() => {
     if (room.room == null) {
@@ -71,14 +71,9 @@ function Chat(props) {
   }
 
   function updateRoom(e, myCallback) {
-    if (room.room) {
-      socket.emit("leaveRoom", room);
-      console.log("left: " + room.room);
-      myCallback(e);
-    }
-    // socket.emit("leaveRoom", room);
-    // console.log("left: " + room.room);
-    // myCallback(e);
+    socket.emit("leaveRoom", room);
+    console.log("left: " + room.room);
+    myCallback(e);
   }
 
   const onMessageSubmit = (messages) => {
