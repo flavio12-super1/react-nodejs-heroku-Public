@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SocketContext from "./SocketContext";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,8 @@ function Register() {
   const navigate = useNavigate();
 
   const register = () => {
+    const userData = useContext(SocketContext);
+    const { uri } = userData;
     axios({
       method: "POST",
       data: {
