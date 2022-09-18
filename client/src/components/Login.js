@@ -1,7 +1,6 @@
 import React from "react";
 import axios from "axios";
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import SocketContext from "./SocketContext";
 
 function Login() {
@@ -9,7 +8,6 @@ function Login() {
   const { uri } = userData;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const Login = () => {
     axios({
@@ -22,14 +20,14 @@ function Login() {
       url: `${uri}/login`,
     })
       .then((res) => {
-        if (res.data.msg == "pass") {
+        if (res.data.msg === "pass") {
           console.log(res.data.user);
           localStorage.setItem("user_id", res.data.user._id);
           localStorage.setItem("username", res.data.user.username);
           localStorage.setItem("email", res.data.user.emailAddress);
           localStorage.setItem("status", "online");
           window.location.href = `${uri}/lurker`;
-        } else if (res.data.msg == "wait") {
+        } else if (res.data.msg === "wait") {
           alert("you have been rate limited, please wait a minute");
         } else {
           console.log(res.data.msg);

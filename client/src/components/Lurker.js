@@ -11,7 +11,6 @@ const userID = localStorage.getItem("user_id");
 function Lurker(props) {
   const userData = useContext(SocketContext);
   const { socket, uri } = userData;
-  console.log(uri);
 
   function logOut() {
     axios
@@ -19,22 +18,23 @@ function Lurker(props) {
         withCredentials: true,
       })
       .then((res) => {
-        if (res.data.msg == "error") {
+        if (res.data.msg === "error") {
           console.log("there was an error logging out");
-        } else if (res.data.msg == "pass") {
+        } else if (res.data.msg === "pass") {
           localStorage.setItem("status", "offline");
           window.location.href = `${uri}`;
         }
       });
   }
 
-  const [notifications, setNotifications] = useState(Array());
-  const [outGoingNotifications, setOutGoingNotifications] = useState(Array());
-  const [friendsList, setFriendsList] = useState(Array());
+  const [notifications, setNotifications] = useState([]);
+  const [outGoingNotifications, setOutGoingNotifications] = useState([]);
+  const [friendsList, setFriendsList] = useState([]);
 
   useEffect(() => {
+    console.log(myUsername);
     socket.on("private message", (message, userID) => {
-      console.log(message);
+      console.log("friend request from: " + message);
       const data = {
         username: message,
         userID: userID,
@@ -58,9 +58,9 @@ function Lurker(props) {
         withCredentials: true,
         url: `${uri}/addFriend`,
       }).then((res) => {
-        if (res.data.msg == "error") {
+        if (res.data.msg === "error") {
           console.log("there was an error adding friend to friendsList");
-        } else if (res.data.msg == "pass") {
+        } else if (res.data.msg === "pass") {
           console.log("new friend added to friendsList");
         } else {
           console.log("page crashed");
@@ -103,9 +103,9 @@ function Lurker(props) {
       withCredentials: true,
       url: `${uri}/getFriendsList`,
     }).then((res) => {
-      if (res.data.msg == "error") {
+      if (res.data.msg === "error") {
         console.log("there was an error getting friendsList");
-      } else if (res.data.msg == "pass") {
+      } else if (res.data.msg === "pass") {
         setNotifications(res.data.notifications);
         setOutGoingNotifications(res.data.outGoingNotifications);
         setFriendsList(res.data.friendsList);
@@ -119,13 +119,6 @@ function Lurker(props) {
   const outerDiv = {
     display: "flex",
   };
-  const innerDiv = {
-    backgroundColor: "#464646",
-    width: " -webkit-fill-available",
-    color: "white",
-    padding: "5px",
-  };
-  console.log(myUsername);
 
   function denyRequest(username, userID) {
     socket.emit("denyRequest", username, myUsername, userID);

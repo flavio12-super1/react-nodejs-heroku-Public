@@ -1,10 +1,8 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
 import "../../styles/Chat.css";
-import io from "socket.io-client";
 import { useParams, useNavigate } from "react-router-dom";
 import SlateInput from "./SlateInput";
 import { UserContext } from "../Lurker";
-import SocketContext from "../SocketContext";
 import axios from "axios";
 
 function Chat(props) {
@@ -13,7 +11,7 @@ function Chat(props) {
   let navigate = useNavigate();
 
   const [room, setRoom] = useState({ room: id });
-  const [chat, setChat] = useState(Array());
+  const [chat, setChat] = useState([]);
   const [image, setImage] = useState([]);
 
   const username = localStorage.getItem("username");
@@ -22,13 +20,14 @@ function Chat(props) {
 
   const myRef = useRef(null);
 
+  //update room
   useEffect(() => {
-    if (room.room == null) {
-      console.log("pain");
-    } else if (room.room != null) {
+    if (room.room != null) {
       socket.emit("joinRoom", room);
       console.log("joined: " + room.room + " successfuly");
+      setChat([]);
       navigate("/lurker/messages/" + room.room);
+
       axios({
         method: "POST",
         data: {
@@ -47,9 +46,12 @@ function Chat(props) {
           console.log(myRef);
         })
         .catch((err) => console.log(err));
+    } else {
+      console.log("user has joined no room");
     }
   }, [room]);
 
+  //recieve messages
   useEffect(() => {
     socket.on("message", (data) => {
       setChat((chat) => [...chat, data]);
@@ -62,33 +64,26 @@ function Chat(props) {
       });
       console.log(myRef);
     });
-    // getMessages(room.room);
-  }, []);
-  // useEffect(() => {
-  //   myRef.current.scrollIntoView({
-  //     behavior: "smooth",
-  //     block: "end",
-  //   });
-  //   console.log(myRef);
-  // }, [chat]);
-  // useEffect(() => {
-  // scroll to bottom every time messages change
-  // const divElement = myRef.current;
-  // divElement.scrollIntoView({ behavior: "auto" });
-  // console.log(myRef);
-  // }, []);
+  }, [socket]);
 
+  //join room
   function joinRoom(e) {
     setRoom({ room: e.target.id });
-    // getMessages(e.target.id);
   }
 
+  //update room
   function updateRoom(e, myCallback) {
-    socket.emit("leaveRoom", room);
-    console.log("left: " + room.room);
-    myCallback(e);
+    if (room.room != null) {
+      socket.emit("leaveRoom", room);
+      console.log("left: " + room.room);
+      myCallback(e);
+    } else {
+      console.log("user has left no room because no room has been initialized");
+      myCallback(e);
+    }
   }
 
+  //send message
   const onMessageSubmit = (messages) => {
     const data = {
       name: username,
@@ -108,12 +103,14 @@ function Chat(props) {
     setImage([]);
   };
 
+  //json parse each message
   const parseMessage = (myMessage) => {
     myMessage = JSON.stringify(myMessage.children[0].text);
 
     return JSON.parse(myMessage);
   };
 
+  //render each message
   const renderChatMessages = (allMsg) => {
     return allMsg.map((msg, index) => (
       <div key={index}>
@@ -126,6 +123,7 @@ function Chat(props) {
     ));
   };
 
+  //render images
   const renderDataImg = (allImg) => {
     return allImg.map((img, index) => (
       <div key={index}>
@@ -134,6 +132,7 @@ function Chat(props) {
     ));
   };
 
+  //render chat
   const renderChat = () => {
     return chat.map((data, index) => (
       <div key={index}>
@@ -146,6 +145,7 @@ function Chat(props) {
     ));
   };
 
+  //render servers
   const DirectMessages = () => {
     return (
       <div className="roomDiv">
@@ -161,6 +161,8 @@ function Chat(props) {
       </div>
     );
   };
+
+  //render dms
   const friendsMap = () => {
     return friendsList.map((data, index) => (
       <div key={index}>
@@ -171,7 +173,7 @@ function Chat(props) {
     ));
   };
   const DirectMessagesFriends = () => {
-    if (friendsList.length == 0) {
+    if (friendsList.length === 0) {
       return (
         <div className="roomDiv">
           <span>you have 0 friends : (</span>
@@ -283,6 +285,7 @@ function Chat(props) {
 
   return (
     <div
+      style={{ display: "flex" }}
       onDragOver={(event) => {
         preventDefault(event);
       }}
@@ -294,49 +297,43 @@ function Chat(props) {
         handlePaste(event);
       }}
     >
+      <DirectMessages />
+      <DirectMessagesFriends />
       {id ? (
-        <div style={{ display: "flex" }}>
-          <DirectMessages />
-          <DirectMessagesFriends />
-          <div className="box">
-            <div className="header">
-              <div>you are in room: {room.room}</div>
+        <div className="box">
+          <div className="header">
+            <div>you are in room: {room.room}</div>
+          </div>
+          <div className="content">
+            <div ref={myRef}>{renderChat()}</div>
+          </div>
+          <div className="footer">
+            <div>
+              <div id="imageWrapper">{renderImages()}</div>
             </div>
-            <div className="content">
-              <div ref={myRef}>{renderChat()}</div>
-            </div>
-            <div className="footer">
-              <div>
-                <div id="imageWrapper">{renderImages()}</div>
+            <div id="outerFormDiv">
+              <div id="form">
+                <SlateInput onMessageSubmit={onMessageSubmit} />
               </div>
-              <div id="outerFormDiv">
-                <div id="form">
-                  <SlateInput onMessageSubmit={onMessageSubmit} />
-                </div>
-                <div className="iconDiv">
-                  <input
-                    type="file"
-                    name="image-upload"
-                    id="input"
-                    accept="image/*"
-                    onChange={(event) => imageHandler(event)}
-                  />
-                  <div>
-                    <label htmlFor="input" className="image-upload">
-                      <i className="material-icons">add_photo_alternate</i>
-                    </label>
-                  </div>
+              <div className="iconDiv">
+                <input
+                  type="file"
+                  name="image-upload"
+                  id="input"
+                  accept="image/*"
+                  onChange={(event) => imageHandler(event)}
+                />
+                <div>
+                  <label htmlFor="input" className="image-upload">
+                    <i className="material-icons">add_photo_alternate</i>
+                  </label>
                 </div>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div style={{ display: "flex" }}>
-          <DirectMessages />
-          <DirectMessagesFriends />
-          <div>please join room</div>
-        </div>
+        <div>please join room</div>
       )}
     </div>
   );

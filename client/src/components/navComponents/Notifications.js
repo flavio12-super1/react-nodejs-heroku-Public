@@ -1,8 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import "./styles/Notifications.css";
-import io from "socket.io-client";
 import { UserContext } from "../Lurker";
-import SocketContext from "../SocketContext";
 
 function Notifications(props) {
   const userData = useContext(UserContext);
@@ -85,15 +83,15 @@ function Notifications(props) {
           </div>
         </div>
       </div>
-      {tab == "tab0" ? (
+      {tab === "tab0" ? (
         <div className="tabDiv">
           <span>
             Press friend button to add a new friend or pending to accept one
           </span>
         </div>
-      ) : tab == "tab1" ? (
+      ) : tab === "tab1" ? (
         <div className="tabDiv">
-          {notifications.length == 0 ? (
+          {notifications.length === 0 ? (
             <div className="innerNotificationsDiv">
               <span>you have 0 pending requests</span>
             </div>
@@ -103,7 +101,7 @@ function Notifications(props) {
               <div>{renderNotifications().reverse()}</div>
             </div>
           )}
-          {outGoingNotifications.length == 0 ? (
+          {outGoingNotifications.length === 0 ? (
             <div className="innerNotificationsDiv">
               <span>you have 0 pending requests</span>
             </div>

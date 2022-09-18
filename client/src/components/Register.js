@@ -1,7 +1,6 @@
 import React from "react";
 import axios from "axios";
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import SocketContext from "./SocketContext";
 
 function Register() {
@@ -10,7 +9,6 @@ function Register() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const register = () => {
     axios({
@@ -24,9 +22,9 @@ function Register() {
       url: `${uri}/register`,
     })
       .then((res) => {
-        if (res.data.msg == "pass") {
+        if (res.data.msg === "pass") {
           window.location.href = `${uri}/login`;
-        } else if (res.data.msg == "wait") {
+        } else if (res.data.msg === "wait") {
           alert("you have been rate limited, please wait a minute");
         } else {
           console.log(res.data.msg);
