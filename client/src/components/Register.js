@@ -18,12 +18,11 @@ function Register() {
         password: password,
       },
       withCredentials: true,
-      url: "https://react-nodejs-heroku-public.herokuapp.com/register",
+      url: `${uri}/register`,
     })
       .then((res) => {
         if (res.data.msg == "pass") {
-          window.location.href =
-            "https://react-nodejs-heroku-public.herokuapp.com/login";
+          window.location.href = `${uri}/login`;
         } else if (res.data.msg == "wait") {
           alert("you have been rate limited, please wait a minute");
         } else {

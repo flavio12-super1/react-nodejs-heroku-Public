@@ -16,7 +16,7 @@ function Login() {
         password: password,
       },
       withCredentials: true,
-      url: "https://react-nodejs-heroku-public.herokuapp.com/login",
+      url: `${uri}/login`,
     })
       .then((res) => {
         if (res.data.msg == "pass") {
@@ -25,8 +25,7 @@ function Login() {
           localStorage.setItem("username", res.data.user.username);
           localStorage.setItem("email", res.data.user.emailAddress);
           localStorage.setItem("status", "online");
-          window.location.href =
-            "https://react-nodejs-heroku-public.herokuapp.com/lurker";
+          window.location.href = `${uri}/lurker`;
         } else if (res.data.msg == "wait") {
           alert("you have been rate limited, please wait a minute");
         } else {

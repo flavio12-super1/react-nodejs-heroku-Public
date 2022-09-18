@@ -17,7 +17,6 @@ function Chat(props) {
   const [image, setImage] = useState([]);
 
   const username = localStorage.getItem("username");
-  // const socket = useContext(SocketContext);
   const userData = useContext(UserContext);
   const { friendsList, socket, uri } = userData;
 
@@ -35,7 +34,7 @@ function Chat(props) {
           roomID: room.room,
         },
         withCredentials: true,
-        url: "https://react-nodejs-heroku-public.herokuapp.com/getMessages",
+        url: `${uri}/getMessages`,
       })
         .then((res) => {
           console.log(res.data.data);

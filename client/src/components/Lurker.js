@@ -9,15 +9,13 @@ const myUsername = localStorage.getItem("username");
 const userID = localStorage.getItem("user_id");
 
 function Lurker(props) {
-  // const socket = useContext(SocketContext);
-
   const userData = useContext(SocketContext);
   const { socket, uri } = userData;
   console.log(uri);
 
   function logOut() {
     axios
-      .post("https://react-nodejs-heroku-public.herokuapp.com/logout", {
+      .post(`${uri}/logout`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -25,8 +23,7 @@ function Lurker(props) {
           console.log("there was an error logging out");
         } else if (res.data.msg == "pass") {
           localStorage.setItem("status", "offline");
-          window.location.href =
-            "https://react-nodejs-heroku-public.herokuapp.com/";
+          window.location.href = `${uri}`;
         }
       });
   }
@@ -59,7 +56,7 @@ function Lurker(props) {
           userID: userID,
         },
         withCredentials: true,
-        url: "https://react-nodejs-heroku-public.herokuapp.com/addFriend",
+        url: `${uri}/addFriend`,
       }).then((res) => {
         if (res.data.msg == "error") {
           console.log("there was an error adding friend to friendsList");
@@ -104,7 +101,7 @@ function Lurker(props) {
         username: myUsername,
       },
       withCredentials: true,
-      url: "https://react-nodejs-heroku-public.herokuapp.com/getFriendsList",
+      url: `${uri}/getFriendsList`,
     }).then((res) => {
       if (res.data.msg == "error") {
         console.log("there was an error getting friendsList");
