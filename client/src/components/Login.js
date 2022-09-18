@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 import SocketContext from "./SocketContext";
 
 function Login() {
+  const userData = useContext(SocketContext);
+  const { uri } = userData;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const Login = () => {
-    const userData = useContext(SocketContext);
-    const { uri } = userData;
     axios({
       method: "POST",
       data: {
