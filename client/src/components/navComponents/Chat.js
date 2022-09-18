@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
 import "../../styles/Chat.css";
 import io from "socket.io-client";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,6 +19,8 @@ function Chat(props) {
   const username = localStorage.getItem("username");
   const userData = useContext(UserContext);
   const { friendsList, socket, uri } = userData;
+
+  const myRef = useRef(null);
 
   useEffect(() => {
     if (room.room == null) {
@@ -53,6 +55,19 @@ function Chat(props) {
     });
     // getMessages(room.room);
   }, []);
+  useEffect(() => {
+    myRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+    console.log(myRef);
+  }, [chat]);
+  // useEffect(() => {
+  // scroll to bottom every time messages change
+  // const divElement = myRef.current;
+  // divElement.scrollIntoView({ behavior: "auto" });
+  // console.log(myRef);
+  // }, []);
 
   function joinRoom(e) {
     setRoom({ room: e.target.id });
@@ -279,7 +294,7 @@ function Chat(props) {
               <div>you are in room: {room.room}</div>
             </div>
             <div className="content">
-              <div>{renderChat()}</div>
+              <div ref={myRef}>{renderChat()}</div>
             </div>
             <div className="footer">
               <div>
