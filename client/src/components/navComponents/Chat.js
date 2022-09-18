@@ -28,7 +28,6 @@ function Chat(props) {
     } else if (room.room != null) {
       socket.emit("joinRoom", room);
       console.log("joined: " + room.room + " successfuly");
-      setChat([]);
       navigate("/lurker/messages/" + room.room);
       axios({
         method: "POST",
@@ -41,6 +40,11 @@ function Chat(props) {
         .then((res) => {
           console.log(res.data.data);
           setChat(res.data.data);
+          myRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+          });
+          console.log(myRef);
         })
         .catch((err) => console.log(err));
     }
@@ -52,16 +56,21 @@ function Chat(props) {
       console.log(
         "message returned: " + data.message + " images returned: " + data.images
       );
+      myRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+      console.log(myRef);
     });
     // getMessages(room.room);
   }, []);
-  useEffect(() => {
-    myRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-    console.log(myRef);
-  }, [chat]);
+  // useEffect(() => {
+  //   myRef.current.scrollIntoView({
+  //     behavior: "smooth",
+  //     block: "end",
+  //   });
+  //   console.log(myRef);
+  // }, [chat]);
   // useEffect(() => {
   // scroll to bottom every time messages change
   // const divElement = myRef.current;
