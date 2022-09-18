@@ -9,6 +9,12 @@ const myUsername = localStorage.getItem("username");
 const userID = localStorage.getItem("user_id");
 
 function Lurker(props) {
+  // const socket = useContext(SocketContext);
+
+  const userData = useContext(SocketContext);
+  const { socket, uri } = userData;
+  console.log(uri);
+
   function logOut() {
     axios
       .post("https://react-nodejs-heroku-public.herokuapp.com/logout", {
@@ -25,7 +31,6 @@ function Lurker(props) {
       });
   }
 
-  const socket = useContext(SocketContext);
   const [notifications, setNotifications] = useState(Array());
   const [outGoingNotifications, setOutGoingNotifications] = useState(Array());
   const [friendsList, setFriendsList] = useState(Array());

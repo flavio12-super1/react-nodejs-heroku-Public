@@ -18,6 +18,7 @@ import * as io from "socket.io-client";
 import { Routes, Route } from "react-router-dom";
 
 //docs.google.com/document/d/1wHyHjqZIPTr8vkmKXYiMbnNqHJdCe8EQ0mkBzN0kg-g/edit
+//https://www.youtube.com/watch?v=NbgJgmabjQI
 
 function App() {
   const socket = io.connect();
@@ -43,7 +44,7 @@ function App() {
 
   return (
     <div className="App">
-      <SocketContext.Provider value={socket}>
+      <SocketContext.Provider value={{ socket, uri }}>
         <Routes>
           <Route path="*" element={<Error />} />
           <Route path="/" element={<TempHome />} />
