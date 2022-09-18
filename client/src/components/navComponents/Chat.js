@@ -17,9 +17,9 @@ function Chat(props) {
   const [image, setImage] = useState([]);
 
   const username = localStorage.getItem("username");
-  const socket = useContext(SocketContext);
+  // const socket = useContext(SocketContext);
   const userData = useContext(UserContext);
-  const { friendsList } = userData;
+  const { friendsList, socket, uri } = userData;
 
   useEffect(() => {
     if (room.room == null) {

@@ -186,6 +186,8 @@ function Lurker(props) {
             emitRequest,
             outGoingNotifications,
             cancelRequest,
+            socket,
+            uri,
           }}
         >
           <div id="innerDivLurker">{props.page}</div>

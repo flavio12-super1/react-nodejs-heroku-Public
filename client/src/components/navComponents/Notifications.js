@@ -5,7 +5,7 @@ import { UserContext } from "../Lurker";
 import SocketContext from "../SocketContext";
 
 function Notifications(props) {
-  const socket = useContext(SocketContext);
+  // const socket = useContext(SocketContext);
   const userData = useContext(UserContext);
   const {
     notifications,
