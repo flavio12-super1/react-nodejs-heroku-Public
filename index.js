@@ -14,6 +14,7 @@ const crypto = require("crypto");
 //routes
 const User = require("./models/User");
 const Room = require("./models/Room");
+
 //mongoose db
 const mongoose = require("mongoose");
 mongoose.connect(
@@ -25,7 +26,6 @@ mdb.on("error", (error) => console.error(error));
 mdb.once("open", () => console.log("Connected to Mongoose"));
 //passport
 const initializePassport = require("./passport-config");
-
 initializePassport(passport);
 
 app.use(express.urlencoded({ extended: false }));
@@ -144,43 +144,19 @@ io.on("connection", (socket) => {
     socket.join(room.room);
     console.log("joined => " + room.room);
   });
-  socket.on("insertOngoing", (msg, myUsername) => {
-    User.findOne({ username: myUsername })
+
+  socket.on("sendRequest", (username, myUsername, userID) => {
+    User.findOne({ username: username })
       .then((result) => {
         if (result) {
-          console.log("outgoing request from" + myUsername + " to: " + msg);
+          console.log("request made to: " + username + " from: " + myUsername);
+          io.to(result.id).emit("friendRequest", myUsername, userID);
+          io.to(userID).emit("requestUpdate", username, {
+            emitEvent: true,
+          });
           console.log(result.username);
           User.updateOne(
-            { username: myUsername },
-            {
-              $push: {
-                outGoingNotifications: msg,
-              },
-            },
-            function (err, result) {
-              if (err) {
-                console.log(err);
-              } else {
-                console.log(result);
-              }
-            }
-          );
-        } else {
-          console.log("user doenst exist");
-        }
-        return result;
-      })
-      .catch((err) => console.error(`Failed to find document: ${err}`));
-  });
-  socket.on("sendRequest", (msg, myUsername, userID) => {
-    User.findOne({ username: msg })
-      .then((result) => {
-        if (result) {
-          console.log("request made to: " + msg + " from: " + myUsername);
-          io.to(result.id).emit("private message", myUsername, userID);
-          console.log(result.username);
-          User.updateOne(
-            { username: msg },
+            { username: username },
             {
               $push: {
                 notifications: {
@@ -197,7 +173,25 @@ io.on("connection", (socket) => {
               }
             }
           );
+          User.updateOne(
+            { username: myUsername },
+            {
+              $push: {
+                outGoingNotifications: username,
+              },
+            },
+            function (err, result) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(result);
+              }
+            }
+          );
         } else {
+          io.to(userID).emit("requestUpdate", username, {
+            emitEvent: false,
+          });
           console.log("user doenst exist");
         }
         return result;
@@ -488,15 +482,6 @@ app.post("/register", async (req, res) => {
         });
       }
     });
-
-    // user.save(function (err, result) {
-    //   if (err) {
-    //     console.log(err);
-    //   } else {
-    //     console.log(result);
-    //     res.send({ msg: "pass" });
-    //   }
-    // });
   } catch {
     res.redirect("/register");
   }

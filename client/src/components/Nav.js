@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import users from "./lurker-icons/users.png";
 import explore from "./lurker-icons/explore.png";

@@ -1,10 +1,10 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
 import "../../styles/Chat.css";
+import io from "socket.io-client";
 import { useParams, useNavigate } from "react-router-dom";
 import SlateInput from "./SlateInput";
 import { UserContext } from "../Lurker";
 import axios from "axios";
-
 function Chat(props) {
   let { id } = useParams();
   id ??= null;
@@ -19,6 +19,13 @@ function Chat(props) {
   const { friendsList, socket, uri } = userData;
 
   const myRef = useRef(null);
+
+  function updateChat(data) {
+    setChat((chat) => [...chat, data]);
+    console.log(
+      "message returned: " + data.message + " images returned: " + data.images
+    );
+  }
 
   //update room
   useEffect(() => {
@@ -43,7 +50,6 @@ function Chat(props) {
             behavior: "smooth",
             block: "end",
           });
-          console.log(myRef);
         })
         .catch((err) => console.log(err));
     } else {
@@ -54,17 +60,20 @@ function Chat(props) {
   //recieve messages
   useEffect(() => {
     socket.on("message", (data) => {
-      setChat((chat) => [...chat, data]);
-      console.log(
-        "message returned: " + data.message + " images returned: " + data.images
-      );
-      myRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-      console.log(myRef);
+      updateChat(data);
     });
-  }, [socket]);
+  }, []);
+
+  useEffect(() => {
+    myRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+    console.log("chat was updated");
+  }, [chat]);
+  // function scrollUp() {
+  //   console.log("scrolling up");
+  // }
 
   //join room
   function joinRoom(e) {

@@ -13,22 +13,29 @@ import Error from "./components/Error";
 import TempHome from "./components/TempHome";
 
 import SocketContext from "./components/SocketContext";
-import * as io from "socket.io-client";
+import io from "socket.io-client";
 
 import { Routes, Route } from "react-router-dom";
 
 //docs.google.com/document/d/1wHyHjqZIPTr8vkmKXYiMbnNqHJdCe8EQ0mkBzN0kg-g/edit
 //https://www.youtube.com/watch?v=NbgJgmabjQI
 
-function App() {
-  const socket = io.connect();
+const socket = io();
 
+function App() {
   useEffect(() => {
     socket.on("connect", () => {
       console.log("socket is connected");
     });
+    socket.on("disconnect", (reason) => {
+      console.log("socket is disconnected: " + reason);
+    });
+    socket.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+    });
     return () => {
-      socket.disconnect();
+      socket.off("connect");
+      socket.off("disconnect");
     };
   }, []);
 

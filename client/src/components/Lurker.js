@@ -11,6 +11,9 @@ const userID = localStorage.getItem("user_id");
 function Lurker(props) {
   const userData = useContext(SocketContext);
   const { socket, uri } = userData;
+  const [notifications, setNotifications] = useState([]);
+  const [outGoingNotifications, setOutGoingNotifications] = useState([]);
+  const [friendsList, setFriendsList] = useState([]);
 
   function logOut() {
     axios
@@ -26,14 +29,8 @@ function Lurker(props) {
         }
       });
   }
-
-  const [notifications, setNotifications] = useState([]);
-  const [outGoingNotifications, setOutGoingNotifications] = useState([]);
-  const [friendsList, setFriendsList] = useState([]);
-
   useEffect(() => {
-    console.log(myUsername);
-    socket.on("private message", (message, userID) => {
+    socket.on("friendRequest", (message, userID) => {
       console.log("friend request from: " + message);
       const data = {
         username: message,
@@ -85,7 +82,7 @@ function Lurker(props) {
       );
       setOutGoingNotifications(filteredArray);
 
-      alert("friend request was denied");
+      console.log("friend request was denied");
     });
     socket.on("friendRoomId", (username, userID) => {
       const data = {
@@ -114,11 +111,20 @@ function Lurker(props) {
         console.log("page crashed");
       }
     });
+    //start
+    socket.on("requestUpdate", (username, data) => {
+      if (data.emitEvent) {
+        alert(`friend request to ${username} was successfull`);
+        setOutGoingNotifications((outGoingNotifications) => [
+          username,
+          ...outGoingNotifications,
+        ]);
+      } else {
+        alert(`the username ${username} does not exist`);
+      }
+    });
+    //end
   }, []);
-
-  const outerDiv = {
-    display: "flex",
-  };
 
   function denyRequest(username, userID) {
     socket.emit("denyRequest", username, myUsername, userID);
@@ -136,16 +142,12 @@ function Lurker(props) {
     );
     setNotifications(filteredArray);
   }
+
+  //start
   function emitRequest(username) {
     socket.emit("sendRequest", username, myUsername, userID);
-    socket.emit("insertOngoing", username, myUsername);
-    setOutGoingNotifications((outGoingNotifications) => [
-      username,
-      ...outGoingNotifications,
-    ]);
-    //here
-    alert("you made a request");
   }
+  //end
 
   function cancelRequest(username) {
     socket.emit("cancelRequest", username, myUsername);
@@ -159,7 +161,7 @@ function Lurker(props) {
 
   return (
     <div>
-      <div style={outerDiv}>
+      <div id="outerDiv">
         <div id="navDiv">
           <Nav />
           <button id="logOutBtn" onClick={logOut}>
