@@ -16,6 +16,8 @@ import SocketContext from "./components/SocketContext";
 import io from "socket.io-client";
 
 import { Routes, Route } from "react-router-dom";
+import Register from "./components/Register";
+import Login from "./components/Login";
 
 //docs.google.com/document/d/1wHyHjqZIPTr8vkmKXYiMbnNqHJdCe8EQ0mkBzN0kg-g/edit
 //https://www.youtube.com/watch?v=NbgJgmabjQI
@@ -55,8 +57,8 @@ function App() {
         <Routes>
           <Route path="*" element={<Error />} />
           <Route path="/" element={<TempHome />} />
-          <Route path="/register" element={<Home state={true} />} />
-          <Route path="/login" element={<Home state={false} />} />
+          <Route path="/register" element={<Home page={<Register />} />} />
+          <Route path="/login" element={<Home page={<Login />} />} />
           <Route path="/Lurker" element={<Lurker />} />
 
           <Route path="/lurker/messages" element={<Lurker page={<Chat />} />} />

@@ -71,9 +71,6 @@ function Chat(props) {
     });
     console.log("chat was updated");
   }, [chat]);
-  // function scrollUp() {
-  //   console.log("scrolling up");
-  // }
 
   //join room
   function joinRoom(e) {

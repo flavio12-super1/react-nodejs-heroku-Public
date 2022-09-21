@@ -7,20 +7,19 @@ function initialize(passport) {
     const user = await User.findOne({ username: username });
     // console.log(user);
     if (user == null) {
-      return done(null, false);
+      return done(null, false, { msg: "user doesnt exist" });
     }
 
     try {
       if (await bcrypt.compare(password, user.password)) {
-        return done(null, user);
+        return done(null, user, { msg: "pass" });
       } else {
-        return done(null, false);
+        return done(null, false, { msg: "incorrect password" });
       }
     } catch (e) {
       return done(e);
     }
   };
-
 
   passport.use(
     new LocalStrategy({ usernameField: "username" }, authenticateUser)

@@ -442,14 +442,16 @@ app.post("/addFriend", async (req, res) => {
 
 app.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
-    if (!user) res.send({ msg: "username or password is incorrorect" });
+    if (err) {
+      res.send({ msg: "error" });
+      throw err;
+    }
+    if (!user) res.send({ msg: info.msg });
     else {
       req.login(user, (err) => {
         if (err) throw err;
         req.session.authenticated = true;
-        res.send({ msg: "pass", user: user });
-        // console.log(req.session);
+        res.send({ msg: info.msg, user: user });
       });
     }
   })(req, res, next);
