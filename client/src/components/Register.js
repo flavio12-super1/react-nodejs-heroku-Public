@@ -14,31 +14,56 @@ const UserRegister = ({ stateChanger, errorMessages }) => {
     return errorMessages.indexOf(val) > -1;
   }
 
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const Register = () => {
-    if (username && password && email) {
-      axios({
-        method: "POST",
-        data: {
-          email: email,
-          username: username,
-          password: password,
-        },
-        withCredentials: true,
-        url: `${uri}/register`,
-      })
-        .then((res) => {
-          if (res.data.msg === "pass") {
-            window.location.href = `${uri}/login`;
-          } else {
-            const error = res.data.msg;
-            if (!handleCheck(error)) {
-              stateChanger((errorMessages) => [error, ...errorMessages]);
-            }
-          }
+    if (email && username && password) {
+      if (!validateEmail(email)) {
+        const error = "please enter a valid email";
+        if (!handleCheck(error)) {
+          stateChanger((errorMessages) => [error, ...errorMessages]);
+        }
+      } else if (username.length < 8) {
+        const error = "please enter a valid username";
+        if (!handleCheck(error)) {
+          stateChanger((errorMessages) => [error, ...errorMessages]);
+        }
+      } else if (password.length < 8) {
+        const error = "please enter a valid password";
+        if (!handleCheck(error)) {
+          stateChanger((errorMessages) => [error, ...errorMessages]);
+        }
+      } else {
+        axios({
+          method: "POST",
+          data: {
+            email: email,
+            username: username,
+            password: password,
+          },
+          withCredentials: true,
+          url: `${uri}/register`,
         })
-        .catch(function (error) {
-          console.log(error);
-        });
+          .then((res) => {
+            if (res.data.msg === "pass") {
+              window.location.href = `${uri}/login`;
+            } else {
+              const error = res.data.msg;
+              if (!handleCheck(error)) {
+                stateChanger((errorMessages) => [error, ...errorMessages]);
+              }
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
     } else {
       const error = "please fill in all inputs";
       if (!handleCheck(error)) {

@@ -457,33 +457,53 @@ app.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
+const validateEmail = (email) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
+
 app.post("/register", async (req, res) => {
+  const { email, password, username } = req.body;
+
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-    var user = new User({
-      emailAddress: req.body.email,
-      username: req.body.username,
-      password: hashedPassword,
-    });
-
-    User.findOne({ username: req.body.username }, function (err, docs) {
-      if (err) {
-        console.log(err);
-      }
-      if (docs) {
-        res.send({ msg: "username all ready exists" });
+    if (email && username && password) {
+      if (!validateEmail(email)) {
+        res.send({ msg: "please enter a valid email" });
+      } else if (username.length < 8) {
+        res.send({ msg: "please enter a valid username" });
+      } else if (password.length < 8) {
+        res.send({ msg: "please enter a valid password" });
       } else {
-        user.save(function (err, result) {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        var user = new User({
+          emailAddress: email,
+          username: username,
+          password: hashedPassword,
+        });
+
+        User.findOne({ username: username }, function (err, docs) {
           if (err) {
             console.log(err);
+          }
+          if (docs) {
+            res.send({ msg: "username all ready exists" });
           } else {
-            console.log(result);
-            res.send({ msg: "pass" });
+            user.save(function (err, result) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(result);
+                res.send({ msg: "pass" });
+              }
+            });
           }
         });
       }
-    });
+    }
   } catch {
     res.redirect("/register");
   }
