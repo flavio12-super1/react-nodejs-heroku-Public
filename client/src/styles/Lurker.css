@@ -32,7 +32,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100px;
+  min-width: 100px;
   border-right: solid var(--color);
   background-color: #202020;
   box-sizing: border-box;
