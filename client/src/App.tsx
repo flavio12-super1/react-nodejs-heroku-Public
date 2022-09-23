@@ -4,7 +4,7 @@ import Chat from "./components/navComponents/Chat";
 import Explore from "./components/navComponents/Explore";
 import Market from "./components/navComponents/Market";
 import Notifications from "./components/navComponents/Notifications";
-import Settings from "./components/navComponents/Settings";
+import Profile from "./components/navComponents/Profile";
 
 import Home from "./components/Home";
 import Lurker from "./components/Lurker";
@@ -78,8 +78,8 @@ function App() {
           />
           <Route path="/lurker/market" element={<Lurker page={<Market />} />} />
           <Route
-            path="/lurker/settings"
-            element={<Lurker page={<Settings />} />}
+            path="/lurker/:username"
+            element={<Lurker page={<Profile />} />}
           />
         </Routes>
       </SocketContext.Provider>

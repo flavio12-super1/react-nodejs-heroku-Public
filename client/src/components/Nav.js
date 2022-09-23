@@ -4,9 +4,10 @@ import messages from "./lurker-icons/messages.png";
 import explore from "./lurker-icons/explore.png";
 import bell from "./lurker-icons/bell.png";
 import market from "./lurker-icons/market.png";
-import gear from "./lurker-icons/gear.png";
+import profile from "./lurker-icons/profile.png";
 
 function Nav() {
+  const username = localStorage.getItem("username");
   return (
     <div>
       <nav id="innerNavDiv">
@@ -44,9 +45,9 @@ function Nav() {
           </Link>
         </div>
         <div className="myLink">
-          <Link to="/lurker/settings" className="navStyle">
+          <Link to={"/lurker/" + username} className="navStyle">
             <div>
-              <img className="navIcons" src={gear} alt="settings" />
+              <img className="navIcons" src={profile} alt="profile" />
             </div>
           </Link>
         </div>

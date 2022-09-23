@@ -26,6 +26,7 @@ mdb.on("error", (error) => console.error(error));
 mdb.once("open", () => console.log("Connected to Mongoose"));
 //passport
 const initializePassport = require("./passport-config");
+const e = require("express");
 initializePassport(passport);
 
 app.use(express.urlencoded({ extended: false }));
@@ -96,6 +97,9 @@ app.get("/login", checkNotAuthenticated, (req, res) => {
 });
 
 app.get("/register", checkNotAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
+});
+app.get("/lurker/:username", checkAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
@@ -397,6 +401,38 @@ app.post("/getFriendsList", async (req, res) => {
         friendsList: user.friendsList,
         notifications: user.notifications,
         outGoingNotifications: user.outGoingNotifications,
+      });
+    }
+  } catch {
+    res.send({ msg: "error" });
+  }
+});
+
+app.post("/getUserInfo", async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.body.username });
+
+    if (user) {
+      console.log(user.username);
+      console.log(req.session.passport.user.username);
+      if (user.username == req.session.passport.user.username) {
+        console.log("you have access to make edits");
+        res.send({
+          msg: "pass",
+          access: "allowed",
+          username: user.username,
+        });
+      } else {
+        console.log("you dont have access to make edits");
+        res.send({
+          msg: "pass",
+          access: "dennied",
+          username: user.username,
+        });
+      }
+    } else {
+      res.send({
+        msg: "failed",
       });
     }
   } catch {
