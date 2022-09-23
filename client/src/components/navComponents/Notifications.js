@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import "./styles/Notifications.css";
+import "../../styles/Notifications.css";
 import { UserContext } from "../Lurker";
 
 function Notifications(props) {

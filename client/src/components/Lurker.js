@@ -29,6 +29,7 @@ function Lurker(props) {
         }
       });
   }
+
   useEffect(() => {
     socket.on("friendRequest", (message, userID) => {
       console.log("friend request from: " + message);
@@ -38,12 +39,14 @@ function Lurker(props) {
       };
       setNotifications((notifications) => [data, ...notifications]);
     });
+
     socket.on("friendRequestCancel", (username) => {
       let filteredArray = notifications.filter(
         (item) => item.message !== username
       );
       setNotifications(filteredArray);
     });
+
     function addFriend(myUsername, username, userID) {
       axios({
         method: "POST",
@@ -64,6 +67,7 @@ function Lurker(props) {
         }
       });
     }
+
     socket.on("friendRequestAccepted", (username, userID) => {
       const data = {
         username: username,
@@ -76,6 +80,7 @@ function Lurker(props) {
       addFriend(myUsername, username, userID);
       setFriendsList((friendsList) => [data, ...friendsList]);
     });
+
     socket.on("friendRequestDenied", (username) => {
       let filteredArray = outGoingNotifications.filter(
         (item) => item.message !== username
@@ -84,6 +89,7 @@ function Lurker(props) {
 
       console.log("friend request was denied");
     });
+
     socket.on("friendRoomId", (username, userID) => {
       const data = {
         username: username,
@@ -92,6 +98,7 @@ function Lurker(props) {
       addFriend(myUsername, username, userID);
       setFriendsList((friendsList) => [data, ...friendsList]);
     });
+
     axios({
       method: "POST",
       data: {
@@ -111,7 +118,6 @@ function Lurker(props) {
         console.log("page crashed");
       }
     });
-    //start
     socket.on("requestUpdate", (username, data) => {
       if (data.emitEvent) {
         alert(`friend request to ${username} was successfull`);
@@ -123,7 +129,6 @@ function Lurker(props) {
         alert(`the username ${username} does not exist`);
       }
     });
-    //end
   }, []);
 
   function denyRequest(username, userID) {
@@ -143,11 +148,9 @@ function Lurker(props) {
     setNotifications(filteredArray);
   }
 
-  //start
   function emitRequest(username) {
     socket.emit("sendRequest", username, myUsername, userID);
   }
-  //end
 
   function cancelRequest(username) {
     socket.emit("cancelRequest", username, myUsername);

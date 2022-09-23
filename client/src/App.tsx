@@ -18,6 +18,7 @@ import io from "socket.io-client";
 import { Routes, Route } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import Homepage from "./components/navComponents/Homepage";
 
 //docs.google.com/document/d/1wHyHjqZIPTr8vkmKXYiMbnNqHJdCe8EQ0mkBzN0kg-g/edit
 //https://www.youtube.com/watch?v=NbgJgmabjQI
@@ -25,6 +26,7 @@ import Login from "./components/Login";
 const socket = io();
 
 function App() {
+  //initialize socket.io
   useEffect(() => {
     socket.on("connect", () => {
       console.log("socket is connected");
@@ -40,7 +42,7 @@ function App() {
       socket.off("disconnect");
     };
   }, []);
-
+  //check for url
   var currentUrl = window.location.href;
   var partStr = currentUrl.slice(0, 5);
   var uri = "";
@@ -59,7 +61,7 @@ function App() {
           <Route path="/" element={<TempHome />} />
           <Route path="/register" element={<Home page={<Register />} />} />
           <Route path="/login" element={<Home page={<Login />} />} />
-          <Route path="/Lurker" element={<Lurker />} />
+          <Route path="/lurker" element={<Lurker page={<Homepage />} />} />
 
           <Route path="/lurker/messages" element={<Lurker page={<Chat />} />} />
           <Route

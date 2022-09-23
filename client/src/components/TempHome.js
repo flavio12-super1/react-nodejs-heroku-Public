@@ -7,7 +7,6 @@ function TempHome() {
       <h1>tempHome</h1>
       <h3>about lurker</h3>
       <p>...</p>
-      <br />
       <p>This website is still in working progress and will see many updates</p>
       {status === "online" ? (
         <div>
