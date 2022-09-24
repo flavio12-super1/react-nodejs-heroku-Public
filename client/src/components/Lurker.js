@@ -165,13 +165,6 @@ function Lurker(props) {
   return (
     <div>
       <div id="outerDiv">
-        <div id="navDiv">
-          <Nav />
-          <button id="logOutBtn" onClick={logOut}>
-            log out
-          </button>
-        </div>
-
         <UserContext.Provider
           value={{
             notifications,
@@ -185,6 +178,12 @@ function Lurker(props) {
             uri,
           }}
         >
+          <div id="navDiv">
+            <Nav />
+            <button id="logOutBtn" onClick={logOut}>
+              log out
+            </button>
+          </div>
           <div id="innerDivLurker">{props.page}</div>
         </UserContext.Provider>
       </div>
