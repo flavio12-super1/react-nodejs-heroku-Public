@@ -4,6 +4,7 @@ import SocketContext from "../SocketContext";
 import { useParams } from "react-router-dom";
 
 function Profile(props) {
+  const [isLoading, setLoading] = useState(true);
   const [access, setAccess] = useState("dennied");
   const userData = useContext(SocketContext);
   const { uri } = userData;
@@ -29,8 +30,13 @@ function Profile(props) {
       } else {
         setAccess("error");
       }
+      setLoading(false);
     });
   }, [username]);
+
+  if (isLoading) {
+    return <div></div>;
+  }
 
   return (
     <div>
