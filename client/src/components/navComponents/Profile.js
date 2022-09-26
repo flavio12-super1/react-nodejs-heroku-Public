@@ -8,8 +8,6 @@ function Profile(props) {
   const [access, setAccess] = useState("dennied");
   const userData = useContext(SocketContext);
   const { uri } = userData;
-  // const email = localStorage.getItem("email");
-  // const username = localStorage.getItem("username");
   const { username } = useParams();
 
   useEffect(() => {
@@ -41,7 +39,6 @@ function Profile(props) {
   return (
     <div>
       <h2>User Profile component in working progress</h2>
-      {/* <div>email: {email}</div> */}
       {access == "allowed" ? (
         <div>you have access to make edits</div>
       ) : access == "dennied" ? (

@@ -61,10 +61,18 @@ function SlateInput(props: any) {
     }
   };
 
+  useMemo(() => {
+    Transforms.select(editor, { offset: 0, path: [0, 0] });
+  }, []);
+
   return (
     <div id="outerTxtInput">
       <Slate editor={editor} value={initialValue}>
-        <Editable onKeyPress={(event) => handleKeyPress(event)} id="txtInput" />
+        <Editable
+          autoFocus
+          onKeyPress={(event) => handleKeyPress(event)}
+          id="txtInput"
+        />
       </Slate>
     </div>
   );

@@ -289,6 +289,10 @@ function Chat(props) {
   //end
   //code for uploading an image
 
+  const divEditable = () => {
+    return <SlateInput onMessageSubmit={onMessageSubmit} />;
+  };
+
   return (
     <div
       style={{ display: "flex" }}
@@ -318,9 +322,7 @@ function Chat(props) {
               <div id="imageWrapper">{renderImages()}</div>
             </div>
             <div id="outerFormDiv">
-              <div id="form">
-                <SlateInput onMessageSubmit={onMessageSubmit} />
-              </div>
+              <div id="form">{divEditable()}</div>
               <div className="iconDiv">
                 <input
                   type="file"
