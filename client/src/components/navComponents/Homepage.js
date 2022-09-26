@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import SlateInput from "./SlateInput";
+// import SlateInput from "./SlateInput";
 function Homepage() {
   //send message
-  const onMessageSubmit = (messages) => {
-    console.log(messages);
-  };
+  // const onMessageSubmit = (messages) => {
+  //   console.log(messages);
+  // };
   // const inputRef = useRef(null);
 
   // useEffect(() => {
@@ -13,8 +13,9 @@ function Homepage() {
 
   return (
     <div>
-      <SlateInput onMessageSubmit={onMessageSubmit} />
+      {/* <SlateInput onMessageSubmit={onMessageSubmit} /> */}
       {/* <input type="text" ref={inputRef} /> */}
+      <h2>Homepage</h2>
     </div>
   );
 }
