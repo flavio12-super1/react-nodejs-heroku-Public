@@ -34,8 +34,25 @@ function Homepage() {
     position: "absolute",
     width: "-webkit-fill-available",
     height: "100%",
+    display: "flex",
     zIndex: "1",
+    flexFlow: "column",
+    flexGrow: "1",
   };
+
+  const topPortion = {
+    flexBasis: "auto",
+    flexGrow: "0",
+    flexShrink: "1",
+  };
+
+  const bottomPortion = {
+    flexBasis: "0px",
+    flexGrow: "1",
+    flexShrink: "1",
+    overflow: "auto",
+  };
+
   const outerDiv = {
     height: "100vh",
     width: "-webkit-fill-available",
@@ -94,21 +111,6 @@ function Homepage() {
       }).then((res) => {
         console.log(res.data);
         setPosts(res.data);
-        // if (res.data.msg === "pass" && res.data.access === "allowed") {
-        //   setAccess("allowed");
-        //   console.log(res.data.data);
-        //   setPosts(res.data.data);
-        // } else if (
-        //   res.data.msg === "pass" &&
-        //   res.data.access === "dennied"
-        // ) {
-        //   setAccess("dennied");
-        // } else if (res.data.msg === "failed") {
-        //   setAccess("failed");
-        // } else {
-        //   setAccess("error");
-        // }
-        // setLoading(false);
       });
     }
   }, [friendsList]);
@@ -166,18 +168,20 @@ function Homepage() {
   return (
     <div>
       <div style={topDiv} ref={homePageRef}>
-        <div className="lurkerNav">
-          <div className="navInnerText" class="btn">
-            create post
-          </div>
-          <div className="navButtonDiv">
-            <div class="btn">
-              <button onClick={createPost.bind()}>+</button>
+        <div style={topPortion}>
+          <div className="lurkerNav">
+            <div className="navInnerText" class="btn">
+              create post
+            </div>
+            <div className="navButtonDiv">
+              <div class="btn">
+                <button onClick={createPost.bind()}>+</button>
+              </div>
             </div>
           </div>
+          <h2>Homepage</h2>
         </div>
-        <h2>Homepage</h2>
-        <div>{renderPosts()}</div>
+        <div style={bottomPortion}>{renderPosts()}</div>
       </div>
 
       <div style={outerDiv} ref={createPostRef}>
