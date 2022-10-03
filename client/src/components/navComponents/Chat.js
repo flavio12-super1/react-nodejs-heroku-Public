@@ -14,9 +14,9 @@ function Chat(props) {
   const [chat, setChat] = useState([]);
   const [image, setImage] = useState([]);
 
-  const username = localStorage.getItem("username");
+  // const username = localStorage.getItem("username");
   const userData = useContext(UserContext);
-  const { friendsList, socket, uri } = userData;
+  const { myUsername, friendsList, socket, uri } = userData;
 
   const myRef = useRef(null);
 
@@ -92,7 +92,7 @@ function Chat(props) {
   //send message
   const onMessageSubmit = (messages) => {
     const data = {
-      name: username,
+      name: myUsername,
       message: messages,
       images: image,
       room: room.room,
@@ -112,8 +112,11 @@ function Chat(props) {
   //json parse each message
   const parseMessage = (myMessage) => {
     myMessage = JSON.stringify(myMessage.children[0].text);
-
-    return JSON.parse(myMessage);
+    console.log(myMessage.length);
+    if (myMessage.length > 2) {
+      return JSON.parse(myMessage);
+    }
+    return <br />;
   };
 
   //render each message
@@ -331,7 +334,7 @@ function Chat(props) {
                   accept="image/*"
                   onChange={(event) => imageHandler(event)}
                 />
-                <div>
+                <div id="labelDiv">
                   <label htmlFor="input" className="image-upload">
                     <i className="material-icons">add_photo_alternate</i>
                   </label>

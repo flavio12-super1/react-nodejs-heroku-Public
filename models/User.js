@@ -7,6 +7,9 @@ const Friend = mongoose.Schema({
   userID: {
     type: String,
   },
+  postsId: {
+    type: String,
+  },
 });
 
 const UserScheme = mongoose.Schema({
@@ -32,6 +35,10 @@ const UserScheme = mongoose.Schema({
   },
   friendsList: {
     type: [Friend],
+  },
+  userPostsList: {
+    type: String,
+    require: true,
   },
 });
 

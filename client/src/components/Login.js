@@ -29,6 +29,7 @@ const UserLogin = ({ stateChanger, errorMessages }) => {
             localStorage.setItem("user_id", res.data.user._id);
             localStorage.setItem("username", res.data.user.username);
             localStorage.setItem("email", res.data.user.emailAddress);
+            localStorage.setItem("postsId", res.data.user.userPostsList);
             localStorage.setItem("status", "online");
             window.location.href = `${uri}/lurker/`;
           } else {

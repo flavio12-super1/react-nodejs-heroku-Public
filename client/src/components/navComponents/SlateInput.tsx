@@ -61,9 +61,14 @@ function SlateInput(props: any) {
     }
   };
 
-  useMemo(() => {
+  // useMemo(() => {
+  //   Transforms.select(editor, { offset: 0, path: [0, 0] });
+  // }, []);
+
+  useEffect(() => {
+    console.log("focus");
     Transforms.select(editor, { offset: 0, path: [0, 0] });
-  }, []);
+  }, [editor]);
 
   return (
     <div id="outerTxtInput">

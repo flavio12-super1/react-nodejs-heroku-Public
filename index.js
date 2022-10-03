@@ -9,6 +9,8 @@ const path = require("path");
 const cors = require("cors");
 const http = require("http").createServer(app);
 const port = process.env.PORT || 8000;
+const dburl = process.env.DBURL;
+
 const crypto = require("crypto");
 
 //routes
@@ -17,10 +19,7 @@ const Room = require("./models/Room");
 
 //mongoose db
 const mongoose = require("mongoose");
-mongoose.connect(
-  "mongodb+srv://flavioHerrera:flavioHacker@cluster0.xapln6b.mongodb.net/?retryWrites=true&w=majority",
-  { useNewUrlParser: true }
-);
+mongoose.connect(dburl, { useNewUrlParser: true });
 const mdb = mongoose.connection;
 mdb.on("error", (error) => console.error(error));
 mdb.once("open", () => console.log("Connected to Mongoose"));
@@ -256,7 +255,7 @@ io.on("connection", (socket) => {
       }
     });
   });
-  socket.on("acceptRequest", (msg, myUsername, userID) => {
+  socket.on("acceptRequest", (msg, myUsername, userID, postsId) => {
     User.findOne({ username: myUsername }, function (err, docs) {
       if (err) {
         console.log(err);
@@ -282,12 +281,46 @@ io.on("connection", (socket) => {
                 if (err) throw err;
 
                 const roomID = buf.toString("hex");
+                const myUsernameId = docs.id;
 
                 console.log(`${buf.length} bytes of random data: ${roomID}`);
 
-                io.to(userID).emit("friendRequestAccepted", myUsername, roomID);
-                io.to(docs.id).emit("friendRoomId", msg, roomID);
-
+                io.to(userID).emit(
+                  "friendRequestAccepted",
+                  myUsername,
+                  roomID,
+                  postsId
+                );
+                //start of new
+                User.findOne({ username: msg }, function (err, docs) {
+                  console.log(`${msg}: ` + docs.userPostsList);
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    User.updateOne(
+                      { username: msg },
+                      {
+                        $pull: {
+                          outGoingNotifications: myUsername,
+                        },
+                      },
+                      function (err, result) {
+                        if (err) {
+                          console.log(err);
+                        } else {
+                          io.to(myUsernameId).emit(
+                            "friendRoomId",
+                            msg,
+                            roomID,
+                            docs.userPostsList
+                          );
+                          console.log(result);
+                        }
+                      }
+                    );
+                  }
+                });
+                //end of new
                 var room = new Room({
                   roomID: roomID,
                   message: [],
@@ -307,21 +340,6 @@ io.on("connection", (socket) => {
         );
       }
     });
-    User.updateOne(
-      { username: msg },
-      {
-        $pull: {
-          outGoingNotifications: myUsername,
-        },
-      },
-      function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      }
-    );
   });
   socket.on("denyRequest", (msg, myUsername, userID) => {
     User.findOne({ username: myUsername }, function (err, docs) {
@@ -369,6 +387,36 @@ io.on("connection", (socket) => {
     );
   });
 
+  socket.on("createPost", async (data) => {
+    Room.updateOne(
+      { roomID: data.room },
+      {
+        $push: {
+          message: {
+            name: data.name,
+            message: data.message,
+            images: data.images,
+          },
+        },
+      },
+      function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+    console.log(
+      data.name +
+        " => " +
+        data.message +
+        " images: " +
+        "<images>" +
+        " room: " +
+        data.room
+    );
+  });
   socket.on("leaveRoom", (room) => {
     socket.leave(room.room);
     console.log("leaft => " + room.room);
@@ -408,6 +456,28 @@ app.post("/getFriendsList", async (req, res) => {
   }
 });
 
+app.post("/getUserPosts", async (req, res) => {
+  const userPosts = [];
+
+  try {
+    for (let i = 0; i < req.body.friendPostsId.length; i++) {
+      const room = await Room.findOne({ roomID: req.body.friendPostsId[i] });
+      if (room) {
+        for (let x = 0; x < room.message.length; x++) {
+          userPosts.push(room.message[x]);
+          console.log("posts" + room.message[x]);
+        }
+      }
+    }
+    res.send(userPosts);
+  } catch {
+    res.send({ msg: "error" });
+  }
+
+  // console.log(req.body.friendPostsId);
+  // res.send("loading...");
+});
+
 app.post("/getUserInfo", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
@@ -415,12 +485,20 @@ app.post("/getUserInfo", async (req, res) => {
     if (user) {
       console.log(user.username);
       console.log(req.session.passport.user.username);
+
+      const room = await Room.findOne({ roomID: user.userPostsList });
+
+      if (room) {
+        console.log("posts" + room.message);
+      }
+
       if (user.username == req.session.passport.user.username) {
         console.log("you have access to make edits");
         res.send({
           msg: "pass",
           access: "allowed",
           username: user.username,
+          data: room.message,
         });
       } else {
         console.log("you dont have access to make edits");
@@ -428,6 +506,7 @@ app.post("/getUserInfo", async (req, res) => {
           msg: "pass",
           access: "dennied",
           username: user.username,
+          data: "posts",
         });
       }
     } else {
@@ -456,6 +535,7 @@ app.post("/addFriend", async (req, res) => {
               friendsList: {
                 username: `${req.body.username}`,
                 userID: `${req.body.userID}`,
+                postsId: `${req.body.postsId}`,
               },
             },
           },
@@ -514,29 +594,49 @@ app.post("/register", async (req, res) => {
         res.send({ msg: "please enter a valid password" });
       } else {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        crypto.randomBytes(8, (err, buf) => {
+          if (err) throw err;
 
-        var user = new User({
-          emailAddress: email,
-          username: username,
-          password: hashedPassword,
-        });
+          const roomID = buf.toString("hex");
 
-        User.findOne({ username: username }, function (err, docs) {
-          if (err) {
-            console.log(err);
-          }
-          if (docs) {
-            res.send({ msg: "username all ready exists" });
-          } else {
-            user.save(function (err, result) {
-              if (err) {
-                console.log(err);
-              } else {
-                console.log(result);
-                res.send({ msg: "pass" });
-              }
-            });
-          }
+          console.log(`${buf.length} bytes of random data: ${roomID}`);
+
+          var room = new Room({
+            roomID: roomID,
+            message: [],
+          });
+
+          room.save(function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              var user = new User({
+                emailAddress: email,
+                username: username,
+                password: hashedPassword,
+                userPostsList: roomID,
+              });
+
+              User.findOne({ username: username }, function (err, docs) {
+                if (err) {
+                  console.log(err);
+                }
+                if (docs) {
+                  res.send({ msg: "username all ready exists" });
+                } else {
+                  user.save(function (err, result) {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      console.log(result);
+                      res.send({ msg: "pass" });
+                    }
+                  });
+                }
+              });
+              console.log(result);
+            }
+          });
         });
       }
     }

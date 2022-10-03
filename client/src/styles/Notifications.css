@@ -17,26 +17,6 @@
   margin-bottom: 5px;
 }
 
-#outerDiv1 {
-  display: flex;
-  border: solid;
-  margin: 5px;
-  margin-bottom: 0px;
-  background-color: #5e2e8c;
-}
-#friendsIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#buttonDiv1 {
-  display: flex;
-}
-.btn {
-  margin: 5px;
-  margin-right: 0px;
-}
-
 .tabDiv {
   margin: 5px;
 }

@@ -6,6 +6,7 @@ import SocketContext from "./SocketContext";
 import { createContext } from "react";
 export const UserContext = createContext();
 const myUsername = localStorage.getItem("username");
+const postsId = localStorage.getItem("postsId");
 const userID = localStorage.getItem("user_id");
 
 function Lurker(props) {
@@ -47,13 +48,14 @@ function Lurker(props) {
       setNotifications(filteredArray);
     });
 
-    function addFriend(myUsername, username, userID) {
+    function addFriend(myUsername, username, userID, postsId) {
       axios({
         method: "POST",
         data: {
           myUsername: myUsername,
           username: username,
           userID: userID,
+          postsId: postsId,
         },
         withCredentials: true,
         url: `${uri}/addFriend`,
@@ -68,16 +70,17 @@ function Lurker(props) {
       });
     }
 
-    socket.on("friendRequestAccepted", (username, userID) => {
+    socket.on("friendRequestAccepted", (username, userID, postsId) => {
       const data = {
         username: username,
         userID: userID,
+        postsId: postsId,
       };
       let filteredArray = outGoingNotifications.filter(
         (item) => item.message !== username
       );
       setOutGoingNotifications(filteredArray);
-      addFriend(myUsername, username, userID);
+      addFriend(myUsername, username, userID, postsId);
       setFriendsList((friendsList) => [data, ...friendsList]);
     });
 
@@ -90,12 +93,13 @@ function Lurker(props) {
       console.log("friend request was denied");
     });
 
-    socket.on("friendRoomId", (username, userID) => {
+    socket.on("friendRoomId", (username, userID, postsId) => {
       const data = {
         username: username,
         userID: userID,
+        postsId: postsId,
       };
-      addFriend(myUsername, username, userID);
+      addFriend(myUsername, username, userID, postsId);
       setFriendsList((friendsList) => [data, ...friendsList]);
     });
 
@@ -141,7 +145,7 @@ function Lurker(props) {
   }
 
   function acceptRequest(username, userID) {
-    socket.emit("acceptRequest", username, myUsername, userID);
+    socket.emit("acceptRequest", username, myUsername, userID, postsId);
     let filteredArray = notifications.filter(
       (item) => item.username !== username
     );
@@ -167,6 +171,8 @@ function Lurker(props) {
       <div id="outerDiv">
         <UserContext.Provider
           value={{
+            myUsername,
+            postsId,
             notifications,
             denyRequest,
             acceptRequest,

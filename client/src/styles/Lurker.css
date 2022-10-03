@@ -88,3 +88,25 @@ a:-webkit-any-link {
   width: -webkit-fill-available;
   color: white;
 }
+
+/* start of css for lurker nav */
+.lurkerNav {
+  display: flex;
+  border: solid;
+  margin: 5px;
+  margin-bottom: 0px;
+  background-color: #5e2e8c;
+}
+.navInnerText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.navButtonDiv {
+  display: flex;
+}
+.btn {
+  margin: 5px;
+  margin-right: 0px;
+}
+/* end of css for lurker nav */

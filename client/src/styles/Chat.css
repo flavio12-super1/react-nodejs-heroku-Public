@@ -19,7 +19,6 @@
 }
 
 .footer {
-  border-top: solid #fff;
   flex-basis: 40px;
   flex-grow: 0;
   flex-shrink: 1;
@@ -57,18 +56,25 @@
   display: flex;
   width: 100%;
   padding: 5px;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  max-height: 30vh;
+  overflow: auto;
+  box-sizing: border-box;
+  max-height: 158.33px;
 }
 
 #txtInput {
   flex-grow: 1;
   word-break: break-word;
+  height: 100%;
 }
 
 .iconDiv {
   height: 100%;
+}
+
+#labelDiv {
+  border-bottom: solid;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 #input[type="file"] {
@@ -80,10 +86,14 @@
 
 .messageOuterDiv {
   white-space: pre-wrap;
+  min-height: 20px;
+  height: auto;
+  display: flex;
+  align-items: center;
 }
 .messageDiv {
   margin-left: 10px;
-  word-break: break-all;
+  min-width: 5px;
 }
 .username {
   color: gray;

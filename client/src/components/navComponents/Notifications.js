@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import "../../styles/Notifications.css";
+import "../../styles/Lurker.css";
 import { UserContext } from "../Lurker";
 
 function Notifications(props) {
@@ -70,11 +71,11 @@ function Notifications(props) {
 
   return (
     <div id="notificationsDiv">
-      <div id="outerDiv1">
-        <div id="friendsIcon" className="btn">
+      <div className="lurkerNav">
+        <div className="navInnerText" class="btn">
           Friends
         </div>
-        <div id="buttonDiv1">
+        <div className="navButtonDiv">
           <div className="btn">
             <button onClick={() => setTab("tab1")}>pending</button>
           </div>

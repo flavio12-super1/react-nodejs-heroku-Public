@@ -9,6 +9,7 @@ function Profile(props) {
   const userData = useContext(SocketContext);
   const { uri } = userData;
   const { username } = useParams();
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     axios({
@@ -21,6 +22,9 @@ function Profile(props) {
     }).then((res) => {
       if (res.data.msg === "pass" && res.data.access === "allowed") {
         setAccess("allowed");
+        console.log(res.data.data);
+        setPosts(res.data.data);
+        // setPosts((posts) => [...posts, data]);
       } else if (res.data.msg === "pass" && res.data.access === "dennied") {
         setAccess("dennied");
       } else if (res.data.msg === "failed") {
@@ -31,6 +35,60 @@ function Profile(props) {
       setLoading(false);
     });
   }, [username]);
+
+  useEffect(() => {
+    console.log("posts was updated");
+  }, [posts]);
+
+  const postsCss = {
+    margin: "5px",
+    border: "solid",
+    backgroundColor: "#06000a",
+  };
+
+  //json parse each message
+  const parseMessage = (myMessage) => {
+    myMessage = JSON.stringify(myMessage.children[0].text);
+    if (myMessage.length > 2) {
+      return JSON.parse(myMessage);
+    }
+    return <br />;
+  };
+
+  //render each message
+  const renderChatMessages = (allMsg) => {
+    return allMsg.map((msg, index) => (
+      <div key={index}>
+        <div>
+          <div className="messageOuterDiv">
+            <div className="messageDiv">{parseMessage(msg)}</div>
+          </div>
+        </div>
+      </div>
+    ));
+  };
+
+  //render images
+  const renderDataImg = (allImg) => {
+    return allImg.map((img, index) => (
+      <div key={index}>
+        <img src={img} className="myImage" alt="" />
+      </div>
+    ));
+  };
+
+  //render posts
+  const renderPosts = () => {
+    return posts.map((data, index) => (
+      <div key={index} style={postsCss}>
+        <div>
+          <div className="username">{data.name}: </div>
+          <div>{renderChatMessages(data.message)}</div>
+          <div>{renderDataImg(data.images)}</div>
+        </div>
+      </div>
+    ));
+  };
 
   if (isLoading) {
     return <div></div>;
@@ -49,6 +107,11 @@ function Profile(props) {
         <div>there was a server error</div>
       )}
       <div>username: {username}</div>
+      <div>
+        number of posts: {posts.length}
+        <br />
+        posts: {renderPosts()}
+      </div>
     </div>
   );
 }
