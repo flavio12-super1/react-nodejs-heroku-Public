@@ -13,6 +13,7 @@ function Chat(props) {
   let navigate = useNavigate();
 
   const [room, setRoom] = useState({ room: id });
+  const [roomName, setName] = useState({ name: "", roomNameID: "" });
   const [chat, setChat] = useState([]);
   const [image, setImage] = useState([]);
 
@@ -65,6 +66,13 @@ function Chat(props) {
           if (res.data.userMessages.length > 0) {
             console.log(res.data.userMessages);
             setChat(res.data.userMessages.reverse());
+            console.log(serversList);
+            var result = serversList.filter((obj) => {
+              return obj.message == room.room;
+            });
+            console.log(result);
+            setName({ name: result[0].serverName, roomNameID: result[0]._id });
+
             myRef.current.scrollIntoView({
               behavior: "smooth",
               block: "end",
@@ -76,6 +84,25 @@ function Chat(props) {
       console.log("user has joined no room");
     }
   }, [room]);
+
+  useEffect(() => {
+    if (serversList.length > 0) {
+      console.log(serversList);
+      console.log(room.room);
+      if (room.room != null || room.room != undefined) {
+        var result = serversList.filter((obj) => {
+          return obj.message == room.room;
+        });
+        console.log(result);
+        if (result.length > 0) {
+          setName({
+            name: result[0].serverName,
+            roomNameID: result[0]._id,
+          });
+        }
+      }
+    }
+  }, [serversList, room]);
 
   //recieve messages
   useEffect(() => {
@@ -92,7 +119,7 @@ function Chat(props) {
     console.log("chat was updated");
   }, [chat]);
 
-  const [roomName, setName] = useState({ name: "", roomNameID: "" });
+  // const [roomName, setName] = useState({ name: "", roomNameID: "" });
 
   //join room
   function joinRoom(serverName, serverID, userID) {
