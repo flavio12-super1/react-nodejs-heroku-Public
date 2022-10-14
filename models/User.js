@@ -40,6 +40,9 @@ const UserScheme = mongoose.Schema({
     type: String,
     require: true,
   },
+  serversList: {
+    type: [{ type: String }],
+  },
 });
 
 module.exports = mongoose.model("user", UserScheme, "users");

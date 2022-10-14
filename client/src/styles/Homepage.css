@@ -1,0 +1,64 @@
+#topDiv {
+  position: absolute;
+  width: -webkit-fill-available;
+  height: 100%;
+  display: flex;
+  z-index: 1;
+  flex-flow: column;
+  flex-grow: 1;
+}
+#topPortion {
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 1;
+}
+
+#bottomPortion {
+  flex-basis: 0px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+  padding-top: 25px;
+}
+
+#outerDivHomepage {
+  height: 100vh;
+  width: -webkit-fill-available;
+  position: relative;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  visibility: hidden;
+  z-index: 0;
+  background-color: #00000054;
+}
+
+.postsCss {
+  margin: 5px;
+  border: solid;
+  background-color: #06000a;
+  /* position: relative; */
+}
+
+/* start of css for lurker nav */
+.lurkerNav {
+  display: flex;
+  border: solid;
+  margin: 5px;
+  margin-bottom: 0px;
+  background-color: #5e2e8c;
+}
+.navInnerText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.navButtonDiv {
+  display: flex;
+}
+.btn {
+  margin: 5px;
+  margin-right: 0px;
+}
+/* end of css for lurker nav */

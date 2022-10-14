@@ -90,7 +90,7 @@ a:-webkit-any-link {
 }
 
 /* start of css for lurker nav */
-.lurkerNav {
+/* .lurkerNav {
   display: flex;
   border: solid;
   margin: 5px;
@@ -108,5 +108,28 @@ a:-webkit-any-link {
 .btn {
   margin: 5px;
   margin-right: 0px;
-}
+} */
 /* end of css for lurker nav */
+
+/*start of homepage css*/
+
+.container-reply {
+  position: absolute;
+  right: 0px;
+  top: -17.5px;
+  z-index: 999;
+  padding: 5px;
+}
+.button-reply {
+  opacity: 0;
+  pointer-events: auto;
+}
+.button-reply:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+.message:hover .button-reply {
+  opacity: 1;
+  pointer-events: auto;
+}
+/*end of homepage css */

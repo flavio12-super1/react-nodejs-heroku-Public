@@ -27,6 +27,7 @@ function Profile(props) {
         // setPosts((posts) => [...posts, data]);
       } else if (res.data.msg === "pass" && res.data.access === "dennied") {
         setAccess("dennied");
+        setPosts(res.data.data);
       } else if (res.data.msg === "failed") {
         setAccess("failed");
       } else {

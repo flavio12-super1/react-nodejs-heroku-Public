@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import React, { useMemo, useRef, useContext, useState, useEffect } from "react";
 import {
   Editor,
   BaseEditor,
@@ -18,6 +18,7 @@ import {
 } from "slate-react";
 
 import { withHistory, HistoryEditor } from "slate-history";
+import { EventContext } from "./Chat";
 
 type CustomElement = { type: "paragraph"; children: CustomText[] };
 type CustomText = { text: string; bold?: true };
@@ -61,14 +62,17 @@ function SlateInput(props: any) {
     }
   };
 
-  // useMemo(() => {
-  //   Transforms.select(editor, { offset: 0, path: [0, 0] });
-  // }, []);
+  const userData = useContext(EventContext);
+  const { postMessageId } = userData;
 
   useEffect(() => {
     console.log("focus");
     Transforms.select(editor, { offset: 0, path: [0, 0] });
   }, [editor]);
+
+  useEffect(() => {
+    document.getElementById("txtInput")?.focus();
+  }, [postMessageId]);
 
   return (
     <div id="outerTxtInput">

@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+const User = mongoose.Schema({
+  username: {
+    type: String,
+  },
+  userID: {
+    type: String,
+  },
+});
+
 const Data = mongoose.Schema({
   name: {
     type: String,
@@ -17,14 +26,17 @@ const Data = mongoose.Schema({
   },
 });
 
-const RoomScheme = mongoose.Schema({
-  roomID: {
+const ServerScheme = mongoose.Schema({
+  serverName: {
     type: String,
     required: true,
   },
+  users: {
+    type: [User],
+  },
   message: {
-    type: [Data],
+    type: String,
   },
 });
 
-module.exports = mongoose.model("room", RoomScheme, "rooms");
+module.exports = mongoose.model("server", ServerScheme, "servers");

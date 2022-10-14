@@ -19,14 +19,16 @@
 }
 
 .footer {
+  align-items: flex-start;
+  box-sizing: border-box;
+  display: flex;
   flex-basis: 40px;
+  flex-direction: column;
   flex-grow: 0;
   flex-shrink: 1;
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  box-sizing: border-box;
+  background-color: #202020;
   padding: 5px;
+  margin: 5px;
 }
 
 #outerFormDiv {
@@ -72,9 +74,8 @@
 }
 
 #labelDiv {
-  border-bottom: solid;
-  height: 100%;
   box-sizing: border-box;
+  padding-right: 3px;
 }
 
 #input[type="file"] {
@@ -98,3 +99,41 @@
 .username {
   color: gray;
 }
+
+/*start of homepage css*/
+.container-reply {
+  position: absolute;
+  right: 0px;
+  top: -17.5px;
+  z-index: 999;
+  padding: 5px;
+}
+.button-reply {
+  opacity: 0;
+  pointer-events: auto;
+}
+.button-reply:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.message {
+  margin: 5px;
+  border: solid;
+  position: relative;
+}
+
+.message:hover {
+  background-color: #6b6b6b85 !important;
+}
+.message:hover .button-reply {
+  opacity: 1;
+  pointer-events: auto;
+}
+.reply-message {
+  border: solid var(--color);
+  background-color: rgb(19, 51, 99) !important;
+  margin: 5px;
+  position: relative;
+}
+/*end of homepage css */

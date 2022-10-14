@@ -17,14 +17,10 @@ const Data = mongoose.Schema({
   },
 });
 
-const RoomScheme = mongoose.Schema({
-  roomID: {
-    type: String,
-    required: true,
-  },
+const MessageScheme = mongoose.Schema({
   message: {
     type: [Data],
   },
 });
 
-module.exports = mongoose.model("room", RoomScheme, "rooms");
+module.exports = mongoose.model("message", MessageScheme, "messages");

@@ -16,6 +16,8 @@ const crypto = require("crypto");
 //routes
 const User = require("./models/User");
 const Room = require("./models/Room");
+const Server = require("./models/Server");
+const Message = require("./models/Message");
 
 //mongoose db
 const mongoose = require("mongoose");
@@ -111,38 +113,76 @@ io.on("connection", (socket) => {
   socket.userID = socket.request.session.passport.user._id;
   // join the "userID" room
   socket.join(socket.userID);
-
+  //https://mongoosejs.com/docs/tutorials/findoneandupdate.html
   socket.on("message", async (data) => {
-    io.sockets.in(data.room).emit("message", data);
-    Room.updateOne(
-      { roomID: data.room },
-      {
-        $push: {
-          message: {
-            name: data.name,
-            message: data.message,
-            images: data.images,
+    if (data.messageReferance != "") {
+      Message.findOne(
+        { _id: data.room },
+        { message: { $elemMatch: { _id: data.messageReferance } } },
+        function (err, result) {
+          let replyToMessage = result.message[0].message[0].children[0].text;
+          Message.findOneAndUpdate(
+            { _id: data.room },
+            {
+              $push: {
+                message: {
+                  name: data.name,
+                  message: data.message,
+                  images: data.images,
+                  messageReferance: data.messageReferance,
+                },
+              },
+            },
+            { returnOriginal: false },
+            function (err, object) {
+              if (err) {
+                console.log(err);
+              } else {
+                const pushData = {
+                  name: data.name,
+                  message: data.message,
+                  images: data.images,
+                  _id: object.message[object.message.length - 1]._id,
+                  messageReferanceText: replyToMessage,
+                };
+                io.sockets.in(data.room).emit("message", pushData);
+              }
+            }
+          );
+        }
+      );
+    } else {
+      Message.findOneAndUpdate(
+        { _id: data.room },
+        {
+          $push: {
+            message: {
+              name: data.name,
+              message: data.message,
+              images: data.images,
+              messageReferance: "",
+            },
           },
         },
-      },
-      function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
+        { returnOriginal: false },
+        function (err, result) {
           console.log(result);
+          if (err) {
+            console.log(err);
+          } else {
+            const pushData = {
+              name: data.name,
+              message: data.message,
+              images: data.images,
+              _id: result.message[result.message.length - 1]._id,
+            };
+            io.sockets.in(data.room).emit("message", pushData);
+          }
         }
-      }
-    );
-    console.log(
-      data.name +
-        " => " +
-        data.message +
-        " images: " +
-        "<images>" +
-        " room: " +
-        data.room
-    );
+      );
+    }
   });
+
   socket.on("joinRoom", (room) => {
     socket.join(room.room);
     console.log("joined => " + room.room);
@@ -279,58 +319,57 @@ io.on("connection", (socket) => {
             } else {
               crypto.randomBytes(8, (err, buf) => {
                 if (err) throw err;
-
-                const roomID = buf.toString("hex");
                 const myUsernameId = docs.id;
 
-                console.log(`${buf.length} bytes of random data: ${roomID}`);
-
-                io.to(userID).emit(
-                  "friendRequestAccepted",
-                  myUsername,
-                  roomID,
-                  postsId
-                );
-                //start of new
-                User.findOne({ username: msg }, function (err, docs) {
-                  console.log(`${msg}: ` + docs.userPostsList);
-                  if (err) {
-                    console.log(err);
-                  } else {
-                    User.updateOne(
-                      { username: msg },
-                      {
-                        $pull: {
-                          outGoingNotifications: myUsername,
-                        },
-                      },
-                      function (err, result) {
-                        if (err) {
-                          console.log(err);
-                        } else {
-                          io.to(myUsernameId).emit(
-                            "friendRoomId",
-                            msg,
-                            roomID,
-                            docs.userPostsList
-                          );
-                          console.log(result);
-                        }
-                      }
-                    );
-                  }
-                });
-                //end of new
-                var room = new Room({
-                  roomID: roomID,
+                const message = new Message({
                   message: [],
                 });
 
-                room.save(function (err, result) {
+                message.save(function (err, result) {
                   if (err) {
                     console.log(err);
                   } else {
-                    console.log(result);
+                    const messageID = result._id;
+
+                    console.log(
+                      `${buf.length} bytes of random data: ${messageID}`
+                    );
+
+                    io.to(userID).emit(
+                      "friendRequestAccepted",
+                      myUsername,
+                      messageID,
+                      postsId
+                    );
+                    //start of new
+                    User.findOne({ username: msg }, function (err, docs) {
+                      console.log(`${msg}: ` + docs.userPostsList);
+                      if (err) {
+                        console.log(err);
+                      } else {
+                        User.updateOne(
+                          { username: msg },
+                          {
+                            $pull: {
+                              outGoingNotifications: myUsername,
+                            },
+                          },
+                          function (err, result) {
+                            if (err) {
+                              console.log(err);
+                            } else {
+                              io.to(myUsernameId).emit(
+                                "friendRoomId",
+                                msg,
+                                messageID,
+                                docs.userPostsList
+                              );
+                              console.log(result);
+                            }
+                          }
+                        );
+                      }
+                    });
                   }
                 });
               });
@@ -423,34 +462,77 @@ io.on("connection", (socket) => {
   });
 });
 
+// roomID and room
 app.post("/getMessages", async (req, res) => {
+  const userMessages = [];
   try {
-    const room = await Room.findOne({ roomID: req.body.roomID });
+    const message = await Message.findOne({ _id: req.body.roomID });
 
-    if (room) {
-      console.log(room.message);
-      res.send({
-        data: room.message,
+    async function getMessage(i) {
+      console.log(message.message);
+      console.log("messageReferance: " + message.message[i].messageReferance);
+
+      var result = message.message.filter((obj) => {
+        return obj._id == message.message[i].messageReferance;
       });
+      let replyToMessage = result[0].message[0].children[0].text;
+      console.log(replyToMessage);
+      const pushData = {
+        name: message.message[i].name,
+        message: message.message[i].message,
+        images: message.message[i].images,
+        _id: message.message[i]._id,
+        messageReferanceText: replyToMessage,
+      };
+      console.log(pushData);
+      userMessages.push(pushData);
     }
+
+    async function processArray() {
+      //check if room exits
+      for (let i = 0; i < message.message.length; i++) {
+        if (message.message[i].messageReferance != "") {
+          console.log(message.message[i].messageReferance);
+          await getMessage(i);
+        } else {
+          userMessages.push(message.message[i]);
+        }
+      }
+      console.log("done");
+    }
+    await processArray();
+    console.log("sending array");
+
+    res.send({
+      userMessages,
+    });
   } catch {
     res.send({ msg: "error" });
   }
 });
 
-app.post("/getFriendsList", async (req, res) => {
+app.post("/getUserData", async (req, res) => {
+  const userServers = [];
   try {
     const user = await User.findOne({ username: req.body.username });
 
-    if (user.friendsList) {
-      console.log(user.friendsList);
-      res.send({
-        msg: "pass",
-        friendsList: user.friendsList,
-        notifications: user.notifications,
-        outGoingNotifications: user.outGoingNotifications,
-      });
+    console.log(user);
+
+    for (let i = 0; i < user.serversList.length; i++) {
+      const server = await Server.findOne({ _id: user.serversList[i] });
+      if (server) {
+        userServers.push(server);
+        console.log("server info" + server);
+      }
     }
+
+    res.send({
+      msg: "pass",
+      friendsList: user.friendsList,
+      notifications: user.notifications,
+      outGoingNotifications: user.outGoingNotifications,
+      serversList: userServers,
+    });
   } catch {
     res.send({ msg: "error" });
   }
@@ -473,9 +555,6 @@ app.post("/getUserPosts", async (req, res) => {
   } catch {
     res.send({ msg: "error" });
   }
-
-  // console.log(req.body.friendPostsId);
-  // res.send("loading...");
 });
 
 app.post("/getUserInfo", async (req, res) => {
@@ -506,7 +585,7 @@ app.post("/getUserInfo", async (req, res) => {
           msg: "pass",
           access: "dennied",
           username: user.username,
-          data: "posts",
+          data: room.message,
         });
       }
     } else {
@@ -554,6 +633,162 @@ app.post("/addFriend", async (req, res) => {
   } catch {
     res.send({ msg: "error" });
   }
+});
+
+app.post("/createServer", async (req, res) => {
+  const { serverName, user } = req.body;
+  console.log(serverName);
+
+  console.log("username: " + user.username + " userID: " + user.userID);
+
+  const message = new Message({
+    message: [],
+  });
+
+  message.save(function (err, result) {
+    if (err) {
+      console.log(err);
+    } else {
+      const messageID = result._id;
+
+      const users = {
+        username: user.username,
+        userID: user.userID,
+      };
+      var server = new Server({
+        serverName: serverName,
+        users: [users],
+        message: messageID,
+      });
+      server.save(function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(
+            "server id: " +
+              result._id +
+              "server name: " +
+              result.serverName +
+              "server message id: " +
+              result.message
+          );
+
+          User.findOneAndUpdate(
+            { _id: user.userID },
+            {
+              $push: {
+                serversList: result._id,
+              },
+            },
+            { returnOriginal: false },
+            function (err, result) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(result);
+              }
+            }
+          );
+
+          const data = result;
+          res.send(data);
+        }
+      });
+    }
+  });
+});
+
+app.post("/joinServer", async (req, res) => {
+  const { serverID, user } = req.body;
+  console.log(serverID);
+
+  console.log("username: " + user.username + " userID: " + user.userID);
+
+  const users = {
+    username: user.username,
+    userID: user.userID,
+  };
+
+  Server.findOneAndUpdate(
+    { _id: serverID },
+    {
+      $push: {
+        users: [users],
+      },
+    },
+    { returnOriginal: false },
+    function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        User.findOneAndUpdate(
+          { _id: user.userID },
+          {
+            $push: {
+              serversList: result._id,
+            },
+          },
+          { returnOriginal: false },
+          function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(result);
+            }
+          }
+        );
+
+        console.log(result);
+        const data = result;
+        res.send(data);
+      }
+    }
+  );
+
+  // const users = {
+  //   username: user.username,
+  //   userID: user.userID,
+  // };
+  // var server = new Server({
+  //   serverName: serverName,
+  //   users: [users],
+  //   message: messageID,
+  // });
+
+  // server.save(function (err, result) {
+  //   if (err) {
+  //     console.log(err);
+  //   } else {
+  //     console.log(
+  //       "server id: " +
+  //         result._id +
+  //         "server name: " +
+  //         result.serverName +
+  //         "server message id: " +
+  //         result.message
+  //     );
+
+  //     User.findOneAndUpdate(
+  //       { _id: user.userID },
+  //       {
+  //         $push: {
+  //           serversList: result._id,
+  //         },
+  //       },
+  //       { returnOriginal: false },
+  //       function (err, result) {
+  //         if (err) {
+  //           console.log(err);
+  //         } else {
+  //           console.log(result);
+  //         }
+  //       }
+  //     );
+
+  //     const data = result;
+  //     res.send(data);
+  //   }
+  // });
 });
 
 app.post("/login", (req, res, next) => {

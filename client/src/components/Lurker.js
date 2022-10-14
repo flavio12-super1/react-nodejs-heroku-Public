@@ -15,6 +15,7 @@ function Lurker(props) {
   const [notifications, setNotifications] = useState([]);
   const [outGoingNotifications, setOutGoingNotifications] = useState([]);
   const [friendsList, setFriendsList] = useState([]);
+  const [serversList, setServersList] = useState([]);
 
   function logOut() {
     axios
@@ -109,7 +110,7 @@ function Lurker(props) {
         username: myUsername,
       },
       withCredentials: true,
-      url: `${uri}/getFriendsList`,
+      url: `${uri}/getUserData`,
     }).then((res) => {
       if (res.data.msg === "error") {
         console.log("there was an error getting friendsList");
@@ -117,6 +118,7 @@ function Lurker(props) {
         setNotifications(res.data.notifications);
         setOutGoingNotifications(res.data.outGoingNotifications);
         setFriendsList(res.data.friendsList);
+        setServersList(res.data.serversList);
         console.log(res.data);
       } else {
         console.log("page crashed");
@@ -134,6 +136,10 @@ function Lurker(props) {
       }
     });
   }, []);
+
+  function updateServerList(data) {
+    setServersList(data);
+  }
 
   function denyRequest(username, userID) {
     socket.emit("denyRequest", username, myUsername, userID);
@@ -172,13 +178,17 @@ function Lurker(props) {
         <UserContext.Provider
           value={{
             myUsername,
+            userID,
             postsId,
             notifications,
+            serversList,
+            updateServerList,
             denyRequest,
             acceptRequest,
             friendsList,
             emitRequest,
             outGoingNotifications,
+
             cancelRequest,
             socket,
             uri,

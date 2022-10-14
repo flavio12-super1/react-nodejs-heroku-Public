@@ -5,7 +5,7 @@ function Error() {
     <div>
       <div>Error 404</div>
       <div>
-        <p>makes sure you typed in the correct url</p>
+        <p>makes sure you typed in the correct url, server might be down too</p>
       </div>
     </div>
   );
