@@ -93,6 +93,10 @@ app.get("/lurker/messages/:id", checkAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
 
+// app.get("/lurker/messages/:channel_id/:id", checkAuthenticated, (req, res) => {
+//   res.sendFile(path.join(__dirname, "./client/build", "index.html"));
+// });
+
 app.get("/login", checkNotAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
@@ -107,6 +111,23 @@ app.get("/lurker/:username", checkAuthenticated, (req, res) => {
 app.get("*", checkAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build", "index.html"));
 });
+
+//routes
+const getMessages = require("./routes/getMessages");
+const getUserData = require("./routes/getUserData");
+const getUserPosts = require("./routes/getUserPosts");
+const getUserInfo = require("./routes/getUserInfo");
+const addFriend = require("./routes/addFriend");
+const createServer = require("./routes/createServer");
+const joinServer = require("./routes/joinServer");
+
+app.use("/getMessages", getMessages);
+app.use("/getUserData", getUserData);
+app.use("/getUserPosts", getUserPosts);
+app.use("/getUserInfo", getUserInfo);
+app.use("/addFriend", addFriend);
+app.use("/createServer", createServer);
+app.use("/joinServer", joinServer);
 
 io.on("connection", (socket) => {
   console.log(socket.request.session.passport.user._id);
@@ -184,7 +205,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinRoom", (room) => {
+    //use socket.userID to check if user has access to room.room
+
     socket.join(room.room);
+
     console.log("joined => " + room.room);
   });
 
@@ -461,336 +485,7 @@ io.on("connection", (socket) => {
     console.log("leaft => " + room.room);
   });
 });
-
-// roomID and room
-app.post("/getMessages", async (req, res) => {
-  const userMessages = [];
-  try {
-    const message = await Message.findOne({ _id: req.body.roomID });
-
-    async function getMessage(i) {
-      console.log(message.message);
-      console.log("messageReferance: " + message.message[i].messageReferance);
-
-      var result = message.message.filter((obj) => {
-        return obj._id == message.message[i].messageReferance;
-      });
-      let replyToMessage = result[0].message[0].children[0].text;
-      console.log(replyToMessage);
-      const pushData = {
-        name: message.message[i].name,
-        message: message.message[i].message,
-        images: message.message[i].images,
-        _id: message.message[i]._id,
-        messageReferanceText: replyToMessage,
-      };
-      console.log(pushData);
-      userMessages.push(pushData);
-    }
-
-    async function processArray() {
-      //check if room exits
-      for (let i = 0; i < message.message.length; i++) {
-        if (message.message[i].messageReferance != "") {
-          console.log(message.message[i].messageReferance);
-          await getMessage(i);
-        } else {
-          userMessages.push(message.message[i]);
-        }
-      }
-      console.log("done");
-    }
-    await processArray();
-    console.log("sending array");
-
-    res.send({
-      userMessages,
-    });
-  } catch {
-    res.send({ msg: "error" });
-  }
-});
-
-app.post("/getUserData", async (req, res) => {
-  const userServers = [];
-  try {
-    const user = await User.findOne({ username: req.body.username });
-
-    console.log(user);
-
-    for (let i = 0; i < user.serversList.length; i++) {
-      const server = await Server.findOne({ _id: user.serversList[i] });
-      if (server) {
-        userServers.push(server);
-        console.log("server info" + server);
-      }
-    }
-
-    res.send({
-      msg: "pass",
-      friendsList: user.friendsList,
-      notifications: user.notifications,
-      outGoingNotifications: user.outGoingNotifications,
-      serversList: userServers,
-    });
-  } catch {
-    res.send({ msg: "error" });
-  }
-});
-
-app.post("/getUserPosts", async (req, res) => {
-  const userPosts = [];
-
-  try {
-    for (let i = 0; i < req.body.friendPostsId.length; i++) {
-      const room = await Room.findOne({ roomID: req.body.friendPostsId[i] });
-      if (room) {
-        for (let x = 0; x < room.message.length; x++) {
-          userPosts.push(room.message[x]);
-          console.log("posts" + room.message[x]);
-        }
-      }
-    }
-    res.send(userPosts);
-  } catch {
-    res.send({ msg: "error" });
-  }
-});
-
-app.post("/getUserInfo", async (req, res) => {
-  try {
-    const user = await User.findOne({ username: req.body.username });
-
-    if (user) {
-      console.log(user.username);
-      console.log(req.session.passport.user.username);
-
-      const room = await Room.findOne({ roomID: user.userPostsList });
-
-      if (room) {
-        console.log("posts" + room.message);
-      }
-
-      if (user.username == req.session.passport.user.username) {
-        console.log("you have access to make edits");
-        res.send({
-          msg: "pass",
-          access: "allowed",
-          username: user.username,
-          data: room.message,
-        });
-      } else {
-        console.log("you dont have access to make edits");
-        res.send({
-          msg: "pass",
-          access: "dennied",
-          username: user.username,
-          data: room.message,
-        });
-      }
-    } else {
-      res.send({
-        msg: "failed",
-      });
-    }
-  } catch {
-    res.send({ msg: "error" });
-  }
-});
-
-app.post("/addFriend", async (req, res) => {
-  try {
-    User.findOne({ username: req.body.myUsername }, function (err, docs) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(
-          req.body.myUsername + " made friends with " + req.body.username
-        );
-        User.updateOne(
-          { _id: docs.id },
-          {
-            $push: {
-              friendsList: {
-                username: `${req.body.username}`,
-                userID: `${req.body.userID}`,
-                postsId: `${req.body.postsId}`,
-              },
-            },
-          },
-          function (err, result) {
-            if (err) {
-              console.log(err);
-              res.send({ msg: "error" });
-            } else {
-              console.log("friend added" + result);
-              res.send({ msg: "pass" });
-            }
-          }
-        );
-      }
-    });
-  } catch {
-    res.send({ msg: "error" });
-  }
-});
-
-app.post("/createServer", async (req, res) => {
-  const { serverName, user } = req.body;
-  console.log(serverName);
-
-  console.log("username: " + user.username + " userID: " + user.userID);
-
-  const message = new Message({
-    message: [],
-  });
-
-  message.save(function (err, result) {
-    if (err) {
-      console.log(err);
-    } else {
-      const messageID = result._id;
-
-      const users = {
-        username: user.username,
-        userID: user.userID,
-      };
-      var server = new Server({
-        serverName: serverName,
-        users: [users],
-        message: messageID,
-      });
-      server.save(function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(
-            "server id: " +
-              result._id +
-              "server name: " +
-              result.serverName +
-              "server message id: " +
-              result.message
-          );
-
-          User.findOneAndUpdate(
-            { _id: user.userID },
-            {
-              $push: {
-                serversList: result._id,
-              },
-            },
-            { returnOriginal: false },
-            function (err, result) {
-              if (err) {
-                console.log(err);
-              } else {
-                console.log(result);
-              }
-            }
-          );
-
-          const data = result;
-          res.send(data);
-        }
-      });
-    }
-  });
-});
-
-app.post("/joinServer", async (req, res) => {
-  const { serverID, user } = req.body;
-  console.log(serverID);
-
-  console.log("username: " + user.username + " userID: " + user.userID);
-
-  const users = {
-    username: user.username,
-    userID: user.userID,
-  };
-
-  Server.findOneAndUpdate(
-    { _id: serverID },
-    {
-      $push: {
-        users: [users],
-      },
-    },
-    { returnOriginal: false },
-    function (err, result) {
-      if (err) {
-        console.log(err);
-      } else {
-        User.findOneAndUpdate(
-          { _id: user.userID },
-          {
-            $push: {
-              serversList: result._id,
-            },
-          },
-          { returnOriginal: false },
-          function (err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(result);
-            }
-          }
-        );
-
-        console.log(result);
-        const data = result;
-        res.send(data);
-      }
-    }
-  );
-
-  // const users = {
-  //   username: user.username,
-  //   userID: user.userID,
-  // };
-  // var server = new Server({
-  //   serverName: serverName,
-  //   users: [users],
-  //   message: messageID,
-  // });
-
-  // server.save(function (err, result) {
-  //   if (err) {
-  //     console.log(err);
-  //   } else {
-  //     console.log(
-  //       "server id: " +
-  //         result._id +
-  //         "server name: " +
-  //         result.serverName +
-  //         "server message id: " +
-  //         result.message
-  //     );
-
-  //     User.findOneAndUpdate(
-  //       { _id: user.userID },
-  //       {
-  //         $push: {
-  //           serversList: result._id,
-  //         },
-  //       },
-  //       { returnOriginal: false },
-  //       function (err, result) {
-  //         if (err) {
-  //           console.log(err);
-  //         } else {
-  //           console.log(result);
-  //         }
-  //       }
-  //     );
-
-  //     const data = result;
-  //     res.send(data);
-  //   }
-  // });
-});
-
+//loging in
 app.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
@@ -815,7 +510,7 @@ const validateEmail = (email) => {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 };
-
+//register
 app.post("/register", async (req, res) => {
   const { email, password, username } = req.body;
 
@@ -879,7 +574,7 @@ app.post("/register", async (req, res) => {
     res.redirect("/register");
   }
 });
-
+//logout
 app.post("/logout", function (req, res) {
   req.logout(function (err) {
     if (err) {
@@ -905,7 +600,7 @@ function checkNotAuthenticated(req, res, next) {
   }
   next();
 }
-
+//listen on port 8000
 http.listen(port, function () {
   console.log(`listening on port ${port}`);
 });
