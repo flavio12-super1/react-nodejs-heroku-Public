@@ -1,5 +1,6 @@
 const express = require("express");
-require("dotenv").config();
+// require("dotenv").config();
+require("dotenv").config({ path: ".env" });
 const app = require("express")();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
