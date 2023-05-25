@@ -591,7 +591,7 @@ function Chat(props) {
           {roomName.name != "" ? (
             <div className="header">
               <div>you are in room: {roomName.name}</div>
-              <div>server ID: {roomName.roomNameID}</div>
+              <div>SERVER ID: {roomName.roomNameID}</div>
             </div>
           ) : null}
           <div className="content">
